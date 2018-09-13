@@ -1,0 +1,33 @@
+/*
+ Theme Name:     wp-bootstrap-starter Child Theme
+ Description:    wp-bootstrap-starter Child Theme
+ Template:       wp-bootstrap-starter
+ Version:        1.0.0
+*/
+
+@import url("../wp-bootstrap-starter/style.css");
+
+
+/* =Theme customization starts here
+------------------------------------------------------- */
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  color: #0b6bbf;
+}
+
+.page-template-page-template-communities .site-content > .container {
+  max-width: 90% !important;
+}
+
+.table-card table.dataTable {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.table-card .container-fluid {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
