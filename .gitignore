@@ -1,0 +1,36 @@
+##################
+# Ignore silly OS files
+.DS_Store
+*.DS_Store
+
+
+##################
+# Ignore core WP (installed via composer)
+/wp/
+/wp-snapshots/
+
+
+##################
+# Ignore the config file (should be different for each new location!)
+wp-config.php
+
+##################
+# Ignore any installer files or archives created by the Duplicator plugin
+_archive.zip
+installer*.*
+
+##################
+# Ignore all content... 
+/content/*
+
+# ...except for plugins and themes
+!/content/plugins/
+!/content/themes/
+
+# Then ignore all plugins and themes...
+/content/plugins/*
+/content/themes/*
+
+# ...except for the custom ones!
+!/content/plugins/ccrp-soils/
+!/content/themes/bootstrap-starter-child/

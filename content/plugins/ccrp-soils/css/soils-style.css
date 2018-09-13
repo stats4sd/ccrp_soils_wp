@@ -1,0 +1,76 @@
+body, h1, h2, h3, h4, h5, h6 {
+  font-family: 'Open Sans', sans-serif!important;
+}
+
+.yadcf-filter.form-control.filter-control {
+	width: 75%;
+	display: inline-block;
+}
+
+.yadcf-filter-reset-button {
+	display: inline-block;
+}
+
+.commButton {
+  color: green;
+  cursor: pointer;
+}
+
+.btn.btn-default, .woocommerce #respond input#submit, .woocommerce a.button,
+.woocommerce button.button, .woocommerce input.button {
+  color: #222!important;
+  text-transform: none!important;
+}
+
+/*Fixes "Next" button in datatables, which is broken under Sparkling Style*/
+
+.pagination .next {
+  border: none!important;
+  background-color: #FFF;
+  padding: 0!important;
+  font-size: 14px!important;
+  border-radius: 0px!important;
+  margin: 0!important;
+/* overflow: hidden; */
+}
+
+
+/*.navbar-nav {
+  display: inline-block!important;
+}
+
+.navbar.navbar-default .container {
+  display: block!important;
+}*/
+
+.farmer_qrcode_holder img, .mx-auto img {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#samplesheetmodal {
+  top: 50px;
+}
+
+@media print {
+  .print-hide {
+    display: none;
+  }
+  
+.break-after {
+    display: block;
+    page-break-after: always;
+    position: relative;
+}
+
+.break-before {
+    display: block;
+    page-break-before: always;
+    position: relative;
+}
+}
+
+header#masthead {
+  /*background-color:#d94553!important;*/
+}
+

@@ -1,0 +1,75 @@
+{
+  "name": "stats4sd/ccrp_soils_wp",
+  "description": "CCRP Soils Health Toolkit Site - using a composer WP template.",
+  "authors": [
+    {
+      "name": "Dave Mills",
+      "email": "d.e.mills@stats4sd.org"
+    }
+  ],
+  "require": {
+    "johnpbloch/wordpress": "4.9.5",
+    "wpackagist-plugin/bp-member-type-generator": "*",
+    "wpackagist-plugin/buddypress": "*",
+    "wpackagist-plugin/buddypress-members-only": "*",
+    "wpackagist-plugin/duplicator": "*",
+    "wpackagist-plugin/insert-php": "*",
+    "wpackagist-plugin/invite-anyone": "*",
+    "wpackagist-plugin/qr-code-tag": "*",
+    "wpackagist-theme/wp-bootstrap-starter": "*",
+    "dave_in_stats/wordpress-datatables": "dev-master",
+    "vedmack/yadcf": "dev-master"
+  },
+  "require-dev": {
+    "wpackagist-plugin/debug-bar": "*",
+    "wpackagist-plugin/debug-bar-console": "*"
+  },
+  "repositories":[
+    {
+      "type":"git",
+      "url":"git@bitbucket.org:dave_in_stats/wordpress-datatables"
+    },
+    {
+      "type":"composer",
+      "url":"https://wpackagist.org"
+    },
+    {
+      "type":"package",
+      "package": {
+        "name": "vedmack/yadcf",
+        "version": "master",
+        "source": {
+          "url": "git@github.com:vedmack/yadcf",
+          "type": "wordpress-plugin",
+          "reference": "master"
+        }
+      }
+    }
+  ],
+  "autoload": {
+      "psr-0": {
+          "Acme": "src/"
+      }
+  },
+  "config"      : {
+      "vendor-dir": "content/vendor"
+  },
+  "extra" : {
+    "installer-paths": {
+      "content/plugins/{$name}/": ["type:wordpress-plugin"],
+      "content/themes/{$name}/": ["type:wordpress-theme"]
+    },
+    "webroot-dir"     : "wp",
+    "webroot-package" : "wordpress",
+    "wordpress-install-dir": "wp"
+  },
+
+  "scripts": {
+    "post-install-cmd": [
+      "cp wp/index.php ./index.php",
+      "sed -i '' \"s/\\/wp-blog-header/\\/wp\\/wp-blog-header/g\" index.php",
+      "wp option update home http://localhost/ccrp_soils_wp"
+      "cd content/plugins/wordpress-datatables && composer install"
+    ]
+  }
+}
