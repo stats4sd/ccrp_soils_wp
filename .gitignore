@@ -3,6 +3,11 @@
 .DS_Store
 *.DS_Store
 
+##################
+# Ignore Composer and NPM dependancies everywhere
+*vendor/
+*node_modules/
+
 
 ##################
 # Ignore core WP (installed via composer)
