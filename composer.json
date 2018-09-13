@@ -68,7 +68,6 @@
     "post-install-cmd": [
       "cp wp/index.php ./index.php",
       "sed -i '' \"s/\\/wp-blog-header/\\/wp\\/wp-blog-header/g\" index.php",
-      "wp option update home http://localhost/ccrp_soils_wp",
       "(cd content/plugins/wordpress-datatables && composer install)",
       "(cd content/plugins/ccrp-soils/js && yarn && composer install)"
     ]
