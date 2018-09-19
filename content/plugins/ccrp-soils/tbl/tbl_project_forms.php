@@ -38,9 +38,8 @@ function dt_project_forms() {
   //checks that the correct Nonce was passed to show the request came from the WordPress website.
   check_ajax_referer('pa_nonce', 'secure');
 
-  if($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['vars'])) {
-    $user_group_id = $_GET['vars']['user_group_ids'];
-  }
+  $user_group_id = $_REQUEST['vars']['user_group_id'] ?? null;
+
   
 
   //setup the editor object
@@ -69,16 +68,19 @@ function dt_project_forms() {
 
 
   )
-  ->leftJoin('xls_forms','xls_forms.id','=','project_forms_info.form_id')
+  ->leftJoin('xls_forms','xls_forms.id','=','project_forms_info.form_id');
 
-  ->where( function($q) use ($user_group_id) {
-    $q->where("project_forms_info.project_id",'0',"=");
-    foreach($user_group_id as $group){
-      $q->or_where("project_forms_info.project_id",$group);
-    }
-  })
-  
-  ;
+  if($user_group_id) {
+    $editor = $editor
+
+    ->where( function($q) use ($user_group_id) {
+      $q->where("project_forms_info.project_id",'0',"=");
+      foreach($user_group_id as $group){
+        $q->or_where("project_forms_info.project_id",$group);
+      }
+    });
+
+  }
 
   $data = $editor
   ->process( $_POST )

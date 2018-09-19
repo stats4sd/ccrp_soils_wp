@@ -39,9 +39,8 @@ function dt_farms() {
   //checks that the correct Nonce was passed to show the request came from the WordPress website.
   check_ajax_referer('pa_nonce', 'secure');
 
-  if($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['vars'])) {
-    $user_group_id = $_GET['vars']['user_group_ids'];
-  }
+  $user_group_id = $_REQUEST['vars']['user_group_id'] ?? null;
+
 
 
   $editor = Editor::inst( $db, 'farmers' )
@@ -69,7 +68,7 @@ function dt_farms() {
     ->leftJoin('communities','communities.id', '=','farmers.community_id')
     ->leftJoin('wp_bp_groups','wp_bp_groups.id', '=','farmers.project');
   
-  if($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['vars'])) {
+  if($user_group_id) {
     $editor
       ->where( function($q) use ($user_group_id) {
         $q->where("farmers.project",'0',"=");

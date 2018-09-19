@@ -23,8 +23,9 @@ add_action('wp_ajax_dt_soils','dt_soils');
 function dt_soils() {
 
   //include DataTables php script
-  include get_home_path() . "/wp-content/plugins/wordpress_datatables/DataTables_Editor/php/DataTables.php";
+  get_home_path() . "content/plugins/wordpress_datatables/DataTables_Editor/php/DataTables.php";
 
+  wp_die();
   if($_SERVER['REQUEST_METHOD'] === "POST"){
     if(isset($_POST['dt_action']) && isset($_POST['action'])) {
       $_POST['action'] = $_POST['dt_action'];
@@ -38,9 +39,8 @@ function dt_soils() {
   //checks that the correct Nonce was passed to show the request came from the WordPress website.
   check_ajax_referer('pa_nonce', 'secure');
 
-  if($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['vars'])) {
-    $user_group_id = $_GET['vars']['user_group_ids'];
-  }
+  $user_group_id = $_REQUEST['vars']['user_group_id'] ?? null;
+
   
 
   //setup the editor object

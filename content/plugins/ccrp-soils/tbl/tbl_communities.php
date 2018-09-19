@@ -38,9 +38,8 @@ function dt_communities() {
   //checks that the correct Nonce was passed to show the request came from the WordPress website.
   check_ajax_referer('pa_nonce', 'secure');
 
-  if($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['vars'])) {
-    $user_group_id = $_GET['vars']['user_group_ids'];
-  }
+  $user_group_id = $_REQUEST['vars']['user_group_id'] ?? null;
+
 
   // Build our Editor instance and process the data coming from _POST
   $editor = Editor::inst( $db, 'communities' )
@@ -77,7 +76,7 @@ function dt_communities() {
       )
     );
 
-  if($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['vars'])) {
+  if($user_group_id) {
     $editor
       ->where( function($q) use ($user_group_id) {
         $q->where("communities.project",'0',"=");

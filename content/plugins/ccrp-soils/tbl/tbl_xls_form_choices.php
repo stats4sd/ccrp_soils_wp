@@ -46,8 +46,9 @@ function dt_xls_form_choices() {
 
 
   //if the request is a GET (action = fetch), and there is a $_GET['id'] defined, then filter the results to only return the requested record:
-  if($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])){
-    $id = $_GET['id'];
+    $id = $_REQUEST['id'] ?? null;
+
+    if($id){
 
     //add where filter to $editor:
     $editor = $editor->where('xls_form_choices.id',$id);

@@ -38,9 +38,8 @@ function dt_districts() {
   //checks that the correct Nonce was passed to show the request came from the WordPress website.
   check_ajax_referer('pa_nonce', 'secure');
 
-  if($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['vars'])) {
-    $user_group_id = $_GET['vars']['user_group_ids'];
-  }
+  $user_group_id = $_REQUEST['vars']['user_group_id'] ?? null;
+
 
   // Build our Editor instance and process the data coming from _POST
   $editor = Editor::inst( $db, 'districts' )
@@ -66,7 +65,7 @@ function dt_districts() {
     ->leftJoin('wp_bp_groups','wp_bp_groups.id', '=','districts.project')
     ;
 
-  if($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['vars'])) {
+  if($user_group_id) {
     $editor
       ->where( function($q) use ($user_group_id) {
         $q->where("districts.project",'0',"=");
