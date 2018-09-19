@@ -20,12 +20,15 @@ function dt_analysis_ph() {
 
   include dirname(__FILE__) . "/wordpress_datatables/DataTables_Editor/php/DataTables.php";
 
-  // if($_GET['project']) {
-  //   $project = $_GET['project'];
-  // }
-  // else{
-  //   $project = 0;
-  // }
+  if($_SERVER['REQUEST_METHOD'] === "POST"){
+    if(isset($_POST['dt_action']) && isset($_POST['action'])) {
+      $_POST['action'] = $_POST['dt_action'];
+      unset($_POST['dt_action']);
+    }
+    elseif(isset($_POST['action'])) {
+      unset($_POST['action']);
+    }
+  }
 
   
 
