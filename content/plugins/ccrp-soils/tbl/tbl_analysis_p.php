@@ -56,8 +56,6 @@ function dt_analysis_p() {
   $id = $_REQUEST['id'] ?? null;
 
   if($id){
-    
-    $id = $_GET['id'];
 
     //add where filter to $editor:
     $editor = $editor->where('analysis_p.id',$id);

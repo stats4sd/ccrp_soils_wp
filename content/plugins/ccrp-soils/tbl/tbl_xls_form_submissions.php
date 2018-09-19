@@ -47,11 +47,10 @@ function dt_xls_form_submissions() {
 
   //if the request is a GET (action = fetch), and there is a $_GET['id'] defined, then filter the results to only return the requested record:
 
-    $id = $_REQUEST['id']
+  $id = $_REQUEST['id'] ?? null;
 
   if($id){
     
-
     //add where filter to $editor:
     $editor = $editor->where('xls_form_submissions.id',$id);
   }
