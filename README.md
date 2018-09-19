@@ -11,6 +11,7 @@ The site uses the excellent (DataTables)[datatables.net] jQuery plugin to presen
 This site also has a custom plugin (ccrp-soils) and theme (currently a child of the (Bootstrap Starter)[https://en-gb.wordpress.org/themes/wp-bootstrap-starter/], but likely to change soon). These custom plugins are included in this repository.
 
 ## Cloning for local development
+To setup the dependancies locally, you need to have both Composer and Yarn installed on your computer.
 
 
 ## Cloning onto a server

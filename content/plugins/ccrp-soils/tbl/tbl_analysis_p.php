@@ -18,16 +18,17 @@ add_action('wp_ajax_dt_analysis_p','dt_analysis_p');
 
 function dt_analysis_p() {
 
-  include dirname(__FILE__) . "/wordpress_datatables/DataTables_Editor/php/DataTables.php";
+  include get_home_path() . "content/plugins/wordpress-datatables/DataTablesEditor/php/DataTables.php";
 
-  // if($_GET['project']) {
-  //   $project = $_GET['project'];
-  // }
-  // else{
-  //   $project = 0;
-  // }
-
-  
+  if($_SERVER['REQUEST_METHOD'] === "POST"){
+    if(isset($_POST['dt_action']) && isset($_POST['action'])) {
+      $_POST['action'] = $_POST['dt_action'];
+      unset($_POST['dt_action']);
+    }
+    elseif(isset($_POST['action'])) {
+      unset($_POST['action']);
+    }
+  }
 
   //checks that the correct Nonce was passed to show the request came from the WordPress website.
   check_ajax_referer('pa_nonce', 'secure');
@@ -51,8 +52,11 @@ function dt_analysis_p() {
 
 
 
-  //if the request is a GET (action = fetch), and there is a $_GET['id'] defined, then filter the results to only return the requested record:
-  if($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])){
+  //if 'id' is available and we're getting data:
+  $id = $_REQUEST['id'] ?? null;
+
+  if($id){
+    
     $id = $_GET['id'];
 
     //add where filter to $editor:

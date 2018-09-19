@@ -23,14 +23,23 @@ add_action('wp_ajax_dt_farms','dt_farms');
 function dt_farms() {
 
   //include DataTables php script
-  include dirname(__FILE__) . "/wordpress_datatables/DataTables_Editor/php/DataTables.php";
+  include get_home_path() . "content/plugins/wordpress-datatables/DataTablesEditor/php/DataTables.php";
+
+  if($_SERVER['REQUEST_METHOD'] === "POST"){
+    if(isset($_POST['dt_action']) && isset($_POST['action'])) {
+      $_POST['action'] = $_POST['dt_action'];
+      unset($_POST['dt_action']);
+    }
+    elseif(isset($_POST['action'])) {
+      unset($_POST['action']);
+    }
+  }
 
   //checks that the correct Nonce was passed to show the request came from the WordPress website.
   check_ajax_referer('pa_nonce', 'secure');
 
-  if($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['vars'])) {
-    $user_group_id = $_GET['vars']['user_group_ids'];
-  }
+  //get request variables;
+  $user_group_id = $_REQUEST['vars']['user_group_ids'] ?? null;
 
 
   $editor = Editor::inst( $db, 'farmers' )
@@ -58,7 +67,7 @@ function dt_farms() {
     ->leftJoin('communities','communities.id', '=','farmers.community_id')
     ->leftJoin('wp_bp_groups','wp_bp_groups.id', '=','farmers.project');
   
-  if($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['vars'])) {
+  if($user_group_id) {
     $editor
       ->where( function($q) use ($user_group_id) {
         $q->where("farmers.project",'0',"=");

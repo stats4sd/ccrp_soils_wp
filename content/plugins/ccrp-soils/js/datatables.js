@@ -107,6 +107,7 @@ function getDtOptions(params){
     dom: "fritpB",
     ajax: {
       url: params.vars.ajax_url,
+      method: "POST",
       data: {
         action: params.action,
         secure: params.vars.nonce,

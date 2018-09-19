@@ -18,14 +18,17 @@ add_action('wp_ajax_dt_locations_csv','dt_locations_csv');
 
 function dt_locations_csv() {
 
-  include dirname(__FILE__) . "/wordpress_datatables/DataTables_Editor/php/DataTables.php";
+  include get_home_path() . "content/plugins/wordpress-datatables/DataTablesEditor/php/DataTables.php";
 
-  // if($_GET['project']) {
-  //   $project = $_GET['project'];
-  // }
-  // else{
-  //   $project = 0;
-  // }
+  if($_SERVER['REQUEST_METHOD'] === "POST"){
+    if(isset($_POST['dt_action']) && isset($_POST['action'])) {
+      $_POST['action'] = $_POST['dt_action'];
+      unset($_POST['dt_action']);
+    }
+    elseif(isset($_POST['action'])) {
+      unset($_POST['action']);
+    }
+  }
 
   
 
@@ -61,17 +64,17 @@ function dt_locations_csv() {
 
 
   //if the request is a GET (action = fetch), and there is a $_GET['id'] defined, then filter the results to only return the requested record:
-  if($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])){
-    $id = $_GET['id'];
+  $id = $_REQUEST['id'] ?? null;
 
+  if($id){
     //add where filter to $editor:
     $editor = $editor->where('locations_csv.id',$id);
   }
 
   //add a per-project filter:
-  if($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['project_id'])){
-    $project_id = $_GET['project_id'];
-
+  $project_id = $_REQUEST['project_id'] ?? null;
+  if($project_id){
+    
     //add where filter to $editor:
     $editor = $editor->where(function($q) use ($project_id){
       $q->where(function($r) use($project_id){
