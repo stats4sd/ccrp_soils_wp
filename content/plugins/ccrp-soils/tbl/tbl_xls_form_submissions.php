@@ -18,7 +18,7 @@ add_action('wp_ajax_dt_xls_form_submissions','dt_xls_form_submissions');
 
 function dt_xls_form_submissions() {
 
-  include dirname(__FILE__) . "/wordpress_datatables/DataTables_Editor/php/DataTables.php";
+  include get_home_path() . "content/plugins/wordpress-datatables/DataTablesEditor/php/DataTables.php";
 
   if($_SERVER['REQUEST_METHOD'] === "POST"){
     if(isset($_POST['dt_action']) && isset($_POST['action'])) {

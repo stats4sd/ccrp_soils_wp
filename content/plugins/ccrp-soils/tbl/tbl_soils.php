@@ -23,9 +23,8 @@ add_action('wp_ajax_dt_soils','dt_soils');
 function dt_soils() {
 
   //include DataTables php script
-  get_home_path() . "content/plugins/wordpress_datatables/DataTables_Editor/php/DataTables.php";
+  include get_home_path() . "content/plugins/wordpress-datatables/DataTablesEditor/php/DataTables.php";
 
-  wp_die();
   if($_SERVER['REQUEST_METHOD'] === "POST"){
     if(isset($_POST['dt_action']) && isset($_POST['action'])) {
       $_POST['action'] = $_POST['dt_action'];
@@ -108,13 +107,17 @@ function dt_soils() {
       Field::inst('volume_topup'),
       Field::inst('weight_soil')
     )
-  )
-  ->where( function($q) use ($user_group_id) {
-    $q->where("samples.project_id",'0',"=");
-    foreach($user_group_id as $group){
-      $q->or_where("samples.project_id",$group);
-    }
-  });
+  );
+
+  if($user_group_id){
+    $editor = $editor
+    ->where( function($q) use ($user_group_id) {
+      $q->where("samples.project_id",'0',"=");
+      foreach($user_group_id as $group){
+        $q->or_where("samples.project_id",$group);
+      }
+    });
+  }
 
   $data = $editor
   ->process( $_POST )
