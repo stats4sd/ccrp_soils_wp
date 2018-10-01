@@ -1,0 +1,29 @@
+/*
+ Theme Name:     TwentySixteen Child Theme
+ Description:    TwentySixteen Child Theme
+ Template:       twentysixteen
+ Version:        1.0.0
+*/
+
+@import url("../twentysixteen/style.css");
+
+
+/* =Theme customization starts here
+------------------------------------------------------- */
+
+.page-template-page-template-communities .site-content > .container {
+  max-width: 90% !important;
+}
+
+.table-card table.dataTable {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.table-card .container-fluid {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
