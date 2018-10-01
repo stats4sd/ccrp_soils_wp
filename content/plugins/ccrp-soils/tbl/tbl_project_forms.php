@@ -70,6 +70,9 @@ function dt_project_forms() {
   )
   ->leftJoin('xls_forms','xls_forms.id','=','project_forms_info.form_id');
 
+  if($user_group_id) {
+    $editor = $editor
+
   if($user_group_id){
     $editor = $editor
     ->where( function($q) use ($user_group_id) {

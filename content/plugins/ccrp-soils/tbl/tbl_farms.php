@@ -35,6 +35,7 @@ function dt_farms() {
     }
   }
 
+
   //checks that the correct Nonce was passed to show the request came from the WordPress website.
   check_ajax_referer('pa_nonce', 'secure');
 

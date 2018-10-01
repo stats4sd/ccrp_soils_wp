@@ -30,8 +30,6 @@ function dt_xls_form_choices() {
     }
   }
 
-  
-
   //checks that the correct Nonce was passed to show the request came from the WordPress website.
   check_ajax_referer('pa_nonce', 'secure');
 
@@ -48,6 +46,9 @@ function dt_xls_form_choices() {
 
 
   //if the request is a GET (action = fetch), and there is a $_GET['id'] defined, then filter the results to only return the requested record:
+    $id = $_REQUEST['id'] ?? null;
+
+    if($id){
   
   $id = $_REQUEST['id'] ?? null;
   if($id){

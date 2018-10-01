@@ -25,7 +25,6 @@ function dt_xls_form_questions() {
   //include DataTables php script
   include get_home_path() . "content/plugins/wordpress-datatables/DataTablesEditor/php/DataTables.php";
 
-
   if($_SERVER['REQUEST_METHOD'] === "POST"){
     if(isset($_POST['dt_action']) && isset($_POST['action'])) {
       $_POST['action'] = $_POST['dt_action'];
@@ -34,6 +33,7 @@ function dt_xls_form_questions() {
     elseif(isset($_POST['action'])) {
       unset($_POST['action']);
     }
+  }
   }
 
   //checks that the correct Nonce was passed to show the request came from the WordPress website.
@@ -64,9 +64,9 @@ function dt_xls_form_questions() {
 
   ///// NOTE - getting individual question record is disabled in favour of getting all questions by FORM ID
   //if the request is a GET (action = fetch), and there is a $_GET['id'] defined, then filter the results to only return the requested record:
-  
   $id = $_REQUEST['id'] ?? null;
 
+  if($id){
   if($id){
 
     //add where filter to $editor:

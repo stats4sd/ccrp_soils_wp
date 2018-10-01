@@ -53,6 +53,7 @@ function dt_analysis_ph() {
 
   if($id){
 
+    if($id){
     //add where filter to $editor:
     $editor = $editor->where('analysis_ph.id',$id);
   }

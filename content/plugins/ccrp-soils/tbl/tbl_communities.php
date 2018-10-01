@@ -25,14 +25,23 @@ function dt_communities() {
   //include DataTables php script
   include get_home_path() . "content/plugins/wordpress-datatables/DataTablesEditor/php/DataTables.php";
 
-  //checks that the correct Nonce was passed to show the request came from the WordPress website.
-  check_ajax_referer('pa_nonce', 'secure');
-
   if($_SERVER['REQUEST_METHOD'] === "POST"){
     if(isset($_POST['dt_action']) && isset($_POST['action'])) {
       $_POST['action'] = $_POST['dt_action'];
       unset($_POST['dt_action']);
     }
+    elseif(isset($_POST['action'])) {
+      unset($_POST['action']);
+    }
+  }
+
+  //checks that the correct Nonce was passed to show the request came from the WordPress website.
+  check_ajax_referer('pa_nonce', 'secure');
+
+  $user_group_id = $_REQUEST['vars']['user_group_id'] ?? null;
+
+      $_POST['action'] = $_POST['dt_action'];
+      unset($_POST['dt_action']);
     elseif(isset($_POST['action'])) {
       unset($_POST['action']);
     }

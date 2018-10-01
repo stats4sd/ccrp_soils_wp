@@ -38,7 +38,8 @@ function dt_soils() {
   //checks that the correct Nonce was passed to show the request came from the WordPress website.
   check_ajax_referer('pa_nonce', 'secure');
 
-  $user_group_id = $_REQUEST['vars']['user_group_ids'] ?? null;
+  $user_group_id = $_REQUEST['vars']['user_group_id'] ?? null;
+
   
   //setup the editor object
   $editor = Editor::inst( $db, 'samples' )

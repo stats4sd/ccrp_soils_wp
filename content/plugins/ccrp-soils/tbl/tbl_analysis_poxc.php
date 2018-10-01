@@ -20,6 +20,15 @@ function dt_analysis_poxc() {
 
   include get_home_path() . "content/plugins/wordpress-datatables/DataTablesEditor/php/DataTables.php";
 
+  if($_SERVER['REQUEST_METHOD'] === "POST"){
+    if(isset($_POST['dt_action']) && isset($_POST['action'])) {
+      $_POST['action'] = $_POST['dt_action'];
+      unset($_POST['dt_action']);
+    }
+    elseif(isset($_POST['action'])) {
+      unset($_POST['action']);
+    }
+  }
 
   if($_SERVER['REQUEST_METHOD'] === "POST"){
     if(isset($_POST['dt_action']) && isset($_POST['action'])) {
@@ -64,6 +73,7 @@ function dt_analysis_poxc() {
 
   if($id){
 
+    if($id){
     //add where filter to $editor:
     $editor = $editor->where('analysis_poxc.id',$id);
   }
