@@ -16,6 +16,7 @@
     "wpackagist-plugin/insert-php": "*",
     "wpackagist-plugin/invite-anyone": "*",
     "wpackagist-plugin/qr-code-tag": "*",
+    "wpackagist-plugin/wpt-custom-mo-file":"*",
     "wpackagist-theme/wp-bootstrap-starter": "*",
     "wpackagist-theme/twentysixteen": "*",
     "dave_in_stats/wordpress-datatables": "dev-master",

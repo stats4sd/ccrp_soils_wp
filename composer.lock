@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f702c9100f0dae7d4c7b7fdf113887fc",
+    "content-hash": "2a4d03abb23165822dab3e2cc4e10b39",
     "packages": [
         {
             "name": "composer/installers",
@@ -343,15 +343,15 @@
         },
         {
             "name": "wpackagist-plugin/duplicator",
-            "version": "1.2.44",
+            "version": "1.2.48",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/duplicator/",
-                "reference": "tags/1.2.44"
+                "reference": "tags/1.2.48"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/duplicator.1.2.44.zip",
+                "url": "https://downloads.wordpress.org/plugin/duplicator.1.2.48.zip",
                 "reference": null,
                 "shasum": null
             },
@@ -420,6 +420,26 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/qr-code-tag/"
+        },
+        {
+            "name": "wpackagist-plugin/wpt-custom-mo-file",
+            "version": "1.1.0",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/wpt-custom-mo-file/",
+                "reference": "tags/1.1.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/wpt-custom-mo-file.1.1.0.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/wpt-custom-mo-file/"
         },
         {
             "name": "wpackagist-theme/twentysixteen",

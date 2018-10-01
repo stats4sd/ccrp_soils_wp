@@ -39,6 +39,7 @@ if ( !function_exists( 'get_home_path' ) ) require_once( dirname(__FILE__) . '/.
 require_once "vendor/autoload.php";
 use GuzzleHttp\Client;
 
+include plugin_dir_path( __FILE__ ) . "class-my-bp-groups-widget.php";
 
 /*
 All the files with names starting with "tbl_" contain AJAX functions for querying the database.
@@ -89,22 +90,21 @@ class Soils_Data_Plugin {
   // Convenience function to get a particular set of values to 'localize' javascript files:
   // *****************************************************
   public function getLocal() {
-    $config = parse_ini_file('/opt/soils_conini.php',true);
 
-
-    $user_groups = BP_Groups_Member::get_group_ids( get_current_user_id());
-
-    $user_groups = $user_groups['groups'];
+    // get buddypress groups of current user;
+    $user_groups_ids = BP_Groups_Member::get_group_ids( get_current_user_id());
+    $user_groups_ids = $user_groups_ids['groups'];
 
     if ( !function_exists( 'groups_get_group' ) ) {
-        require_once get_site_url() . 'wp-content/plugins/buddypress/bp-groups/bp-groups-functions.php';
-    } 
+      require_once get_site_url() . '/content/plugins/buddypress/bp-groups/bp-groups-functions.php';
+    }
 
-    $groups = array_map(function($id){
+    //format groups to include kobotools_account.
+    $user_groups = array_map(function($id){
       $group = groups_get_group($id);
       $group->kobotools_account = groups_get_groupmeta($id,"kobotools_account");
       return $group;
-    }, $user_groups);
+    }, $user_groups_ids);
 
     return array(
       'user_id' => get_current_user_id(),
@@ -112,9 +112,9 @@ class Soils_Data_Plugin {
       'ajax_url' => admin_url('admin-ajax.php'),
       'mustache_url' => plugin_dir_url(__FILE__) . "views",
       'nonce' => wp_create_nonce('pa_nonce'),
-      'node_url' => $config['urls']['node_url'],
-      'user_group_ids' => $user_groups,
-      'user_groups' => $groups
+      'node_url' => NODE_URL,
+      'user_group_ids' => $user_groups_ids,
+      'user_groups' => $user_groups
     );
   }
 
@@ -131,7 +131,7 @@ class Soils_Data_Plugin {
 
     //check if there is an associated Javascript file (associated by filename);
     $scriptpath = "js/" . $post_slug . ".js";
-    //check if there is a javascript file for the current page.
+
     if(file_exists(plugin_dir_path(__FILE__) . $scriptpath)) {
 
       //if there is - enqueue it and pass it the $localize aray as "vars"
@@ -141,14 +141,6 @@ class Soils_Data_Plugin {
       wp_localize_script($post_slug, 'vars', $localize);
       wp_enqueue_script($post_slug);
     }
-
-    //custom files:
-    wp_register_script('qr-codes', plugin_dir_url(__FILE__) . "js/code-builder.js", array('jquery'),time(),true);
-    
-    //localizing passes the $localize array into the javascript with the given variable name, in this case "vars":
-    wp_localize_script('qr-codes', 'vars', $localize);
-    wp_enqueue_script('qr-codes');
-
   }
 
   // *****************************************************
@@ -162,49 +154,43 @@ class Soils_Data_Plugin {
     wp_enqueue_style( 'soils-style', plugin_dir_url( __FILE__ ) .'css/soils-style.css',array(),time() );
 
     wp_register_script( 'popper-script',  plugin_dir_url(__FILE__) . "js/node_modules/popper.js/dist/umd/popper.min.js", array(), time(), true );
+    wp_enqueue_script('popper-script');
 
     //register and queue the general datatables functions:
     wp_register_script("datatables_custom", plugin_dir_url(__FILE__) . "js/datatables.js", array('jquery'),time(),true);
     wp_localize_script("datatables_custom", 'vars', $localize);
+    wp_enqueue_script("datatables_custom");
 
 
     //add Select2 scripts:
     wp_enqueue_style('select2-style',plugin_dir_url( __FILE__ ) . "js/node_modules/select2/dist/css/select2.min.css","4.0.6");
     wp_register_script('select2-script',plugin_dir_url( __FILE__ ) . "js/node_modules/select2/dist/js/select2.full.min.js",array('jquery'),"4.0.6",true);
+    wp_enqueue_script('select2-script');
 
     //register and queue js mustache (for calling and rendering mustache templates client-side);
     wp_register_script("mustache-js", plugin_dir_url(__FILE__) . "js/node_modules/mustache/mustache.min.js",array(),time(),true);
     wp_localize_script("mustache-js", 'vars', $localize);
-    
+    wp_enqueue_script("mustache-js");
+
     wp_register_script( 'jqueryprint-script', plugin_dir_url( __FILE__ ) . 'js/jquery-print.js', array( 'jquery' ), time(), true );
+    wp_enqueue_script("jqueryprint-script");
 
     wp_register_script( 'qr-script', plugin_dir_url( __FILE__ ) . 'js/node_modules/qrcodejs/qrcode.min.js', array( 'jquery' ), time(), true );
-
-
-    //add d3 and c3:
-    // wp_register_script( 'd3', plugin_dir_url( __FILE__ ) . "/js/node_modules/d3/dist/d3.min.js", array(), time(), true );
-    // wp_register_script( 'c3', plugin_dir_url( __FILE__ ) . "/js/node_modules/c3/c3.min.js", array('d3'), time(), true );
-    // wp_enqueue_style('c3', plugin_dir_url( __FILE__ ) . "/js/node_modules/c3/c3.min.css","4.0.6");
-
-
-
-    wp_enqueue_script('popper-script');
-    wp_enqueue_script('select2-script');
-    wp_enqueue_script("datatables_custom");
-    wp_enqueue_script("mustache-js");
-    wp_enqueue_script("jqueryprint-script");
     wp_enqueue_script("qr-script");
 
-    // wp_enqueue_script('d3');
-    // wp_enqueue_script('c3');
+    //custom files:
+    wp_register_script('qr-codes', plugin_dir_url(__FILE__) . "js/code-builder.js", array('jquery'),time(),true);
+    wp_localize_script('qr-codes', 'vars', $localize);
+    wp_enqueue_script('qr-codes');
 
   }
 
   // *******************************
   // DataTables / WP AJAX Action fixer
   // *******************************
+
+  //run this function inside any WP AJAX datatables editor function. It will replace the 'action' property (needed to tell WordPress which of the AJAX functions to run) with the dt_action (needed so DataTables Editor knows whether to run a Create, Replace or Remove function on the database)
   public function replace_dt_action($post){
-    //run this function inside any WP AJAX datatables editor function. It will replace the 'action' property (needed to tell WordPress which of the AJAX functions to run) with the dt_action (needed so DataTables Editor knows whether to run a Create, Replace or Remove function on the database)
     if(isset($post['dt_action']) && isset($post['action'])) {
       $post['action'] = $post['dt_action'];
       unset($post['dt_action']);
