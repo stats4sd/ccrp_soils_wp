@@ -16,5 +16,12 @@ To setup the dependancies locally, you need to have both Composer and Yarn insta
 
 ## Cloning onto a server
 
+Installing the dependancies requires composer and yarn. Make sure you have them both installed [composer instructions](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos); for yarn, run `npm install -g yarn` (though there's discussion about whether installing via npm is [good practice or not...](https://stackoverflow.com/questions/40025890/why-wouldnt-i-use-npm-to-install-yarn).
+
+Once done, install this repo:
+
+1. `git clone` into your webroot folder.
+2. `cd` into your new repo folder and run `composer install`.
+3. 
 
 ## Updating

@@ -69,14 +69,14 @@
   "scripts": {
     "post-install-cmd": [
       "cp wp/index.php ./index.php",
-      "sed -i '' \"s/\\/wp-blog-header/\\/wp\\/wp-blog-header/g\" index.php",
+      "sed -i.bak \"s/\\/wp-blog-header/\\/wp\\/wp-blog-header/g\" index.php",
       "(cd content/plugins/wordpress-datatables && composer install)",
       "(cd content/plugins/ccrp-soils && composer install)",
       "(cd content/plugins/ccrp-soils/js && yarn)"
     ],
     "post-update-cmd": [
     "cp wp/index.php ./index.php",
-      "sed -i '' \"s/\\/wp-blog-header/\\/wp\\/wp-blog-header/g\" index.php",
+      "sed -i.bak \"s/\\/wp-blog-header/\\/wp\\/wp-blog-header/g\" index.php",
       "(cd content/plugins/wordpress-datatables && composer install)",
       "(cd content/plugins/ccrp-soils && composer install)",
       "(cd content/plugins/ccrp-soils/js && yarn)"
