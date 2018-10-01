@@ -16,12 +16,19 @@ To setup the dependancies locally, you need to have both Composer and Yarn insta
 
 ## Cloning onto a server
 
+
+### Check your package managers are installed
 Installing the dependancies requires composer and yarn. Make sure you have them both installed [composer instructions](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos); for yarn, run `npm install -g yarn` (though there's discussion about whether installing via npm is [good practice or not...](https://stackoverflow.com/questions/40025890/why-wouldnt-i-use-npm-to-install-yarn).
 
-Once done, install this repo:
 
+### Clone this repo and install dependancies
 1. `git clone` into your webroot folder.
 2. `cd` into your new repo folder and run `composer install`.
-3. 
+3. check logs to ensure that post-install scripts were run.
+ - includes installing dependancies for other plugins
+ - includes updating index.php with new path.
+
+### Setup WordPress
+2. Copy the `wp-config-sample.php` to `wp-config.php` and add your own config settings. This already has some customisations from the default config file to tell WP where our content is.
 
 ## Updating
