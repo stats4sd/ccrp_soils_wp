@@ -38,4 +38,4 @@ installer*.*
 
 # ...except for the custom ones!
 !/content/plugins/ccrp-soils/
-!/content/themes/wp-bootstrap-starter-child/
+!/content/themes/*-child/
