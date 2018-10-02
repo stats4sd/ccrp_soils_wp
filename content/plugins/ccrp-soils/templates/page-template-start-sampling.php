@@ -12,43 +12,41 @@ get_header(); ?>
     <main id="main" class="site-main" role="main">
 
       <?php while ( have_posts() ) : the_post(); ?>
-      <h2 class='mb-4'>The purpose of the platform</h2>
-      <p>We built this platform to help CCRP projects manage the data they collect during soil sampling and analysis, following the protocols developed by the Cross-cutting Soils project team. The tools available here will help you follow the analysis guides and ensure the data you collect is well structured and easily linkable to the correct physical soil sample. If you choose to make use of the full platform, it will also allow you to download fully merged datasets, containing data from your initial sampling process and all the analyses you have conducted on that sample.</p>
-          
-      <h2 class='mb-4'>How the platform works</h2>
-      <!-- <p class="alert alert-info">How and where to begin?</p> -->
-      <p>There are three main components to this data platform: 
-        <ul>
-          <li>A set of ODK forms for use when collecting and analysing soil samples;</li>
-          <li>A QR Code generation tool, to help you uniquely identify and manage your physical samples;</li>
-          <li>A MySQL Database that helps organise data collected through the different forms.</li>
-        </ul>
-      </p>
-      <p></p>
-      <p>You can use these components in different ways, described below.</p>
-      <h5 class='mb-2'>1. Just use the ODK forms</h5>
-      <p>Using the downloadable resources requires no sign-up, simply download the XLS forms you wish to use from our downloads page.</p>
-      <p>The different analysis protocols all require some level of calculation. The ODK forms we have developed have these calculations programmed in, to help save time and reduce the chance of errors in your results.</p>
-      <p>The analysis forms require you to scan a QR or barcode at the start of the process, to identify your soil sample. We highly recommend using QR codes for uniquely identifying your physical samples, as they can be printed out and kept with the sample. See the QR code generation page for more infomation.</p>
-      <p>To see all the forms available and choose ones to download, go to our downloads page.</p>
 
-      <h5 class='mb-2'>2. Register to use the platform's database</h5>
-      <p>Registering on the site will give you access to the full set of tools, including the ability to collect data via your own Kobotoolbox account, have it syncronised to the platform, and then automatically merged into downloadable datasets. </p>
-      <p>To make full use of the platform, you need to have a kobotoolbox account for your project - if you don't have one, you can set one up easily at <a href="https://kf.kobotoolbox.org">https://kf.kobotoolbox.org</a>. This platform integrates with Kobotoolbox to let you collect soil sample and analysis data with the same tools you use for other data collection activities.</p>
-      <p>The process of using the full platform is as follows:
+      <h3 class="mb-4">Option 1 - use your own system</h3>
+      <p>To start sampling using our forms within your own data management system, you will need to:</p>
         <ol>
-          <li>Contact RMS or the Soils project team to get your project added to the platform.</li>
-          <li>Once we have created your project account, you will be able to log in as project administrator. You can then invite any number of other people to join into your project group, so your full team can access the resources.</li>
-          <li>Decide which kobotoolbox account you want to use and add the username to your project. The platform then shares the full set of ODK forms with you on Kobotolbox using the Kobo API.</li>
-          <li>Finally, you go to the QR generation page and create and print a set of unique QR codes for your project team</li>
+          <li>Download the XLS forms from our downloads page</li>
+          <li>Upload them to your ODK Aggregate service</li>
+          <li>Use our QR generation tool to create QR codes for your soil samples.</li>
         </ol>
+      
 
-        Then, simply use the forms that are shared through Kobotoolbox. The forms are optimised for the Android app ODK-Collect. All the data you collect through the shared forms will be brought into the platform. Once you have collected some data, you can view the records directly through this site, and download a merged dataset containing data from all the forms.
+      <h3 class="mb-4">Option 2 - use this data platform</h3>
+      <p>For more information on the platform, how it's built and how it can help your data collection and processing for soil data, see the About page.</p>
+      <?php
 
-      </p>
+      if(!is_user_logged_in()){ ?>
+        <p class="alert alert-info">If you want to setup your project on this platform, please register your interest using the link in the sidebar. If your project is already in the project list, please ask your project admin to invite you. They can send an invite to your email that will let you create an account on the site.</p>
+      <?php }
+      else{ 
+        //get user's groups
+        $groups = BP_Groups_Member::get_group_ids( get_current_user_id());
 
+        if(count($groups[groups]) == 0 ) {  ?>
+          <p class="alert alert-info">It looks like you are not a member of any projects. If your project is listed in the Projects page, please request a membership. The project admin will be notified and can give you access to the project's resources.</p>
+        <?php }
+        
+        if(count($groups[groups]) > 0 ) {  ?>
+          <p>To collect data through this platform, please do the following:</p>
+          <ol>
+            <li>Check that you have added your Kobotoolbox username to your project.</li>
+            <li>Go to the Data Management page, to create a set of forms and see data you have collected.</li>
+          </ol>
+  
 
-
+      <?php }} ?>
+      
 
       <?php endwhile; // end of the loop. ?>
 

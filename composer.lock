@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2a4d03abb23165822dab3e2cc4e10b39",
+    "content-hash": "3aabc35ca4df903d3beb8c755146cccc",
     "packages": [
         {
             "name": "composer/installers",
@@ -342,6 +342,26 @@
             "homepage": "https://wordpress.org/plugins/buddypress-members-only/"
         },
         {
+            "name": "wpackagist-plugin/contact-form-7",
+            "version": "5.0.4",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/contact-form-7/",
+                "reference": "tags/5.0.4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/contact-form-7.5.0.4.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/contact-form-7/"
+        },
+        {
             "name": "wpackagist-plugin/duplicator",
             "version": "1.2.48",
             "source": {
@@ -420,6 +440,26 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/qr-code-tag/"
+        },
+        {
+            "name": "wpackagist-plugin/restrict-user-access",
+            "version": "1.0.1",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/restrict-user-access/",
+                "reference": "trunk"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/restrict-user-access.zip?timestamp=1528698261",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/restrict-user-access/"
         },
         {
             "name": "wpackagist-plugin/wpt-custom-mo-file",

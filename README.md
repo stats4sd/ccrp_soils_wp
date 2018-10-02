@@ -27,8 +27,19 @@ Installing the dependancies requires composer and yarn. Make sure you have them 
 3. check logs to ensure that post-install scripts were run.
  - includes installing dependancies for other plugins
  - includes updating index.php with new path.
+4. Set permissions correctly, so WordPress can write to uploads etc.:
+ - `sudo chown www-data:www-data /path/to/git/repo -R`
+ - `sudo mkdir /path/to/git/repo/content/uploads`
+ - `sudo chown www-data:www-data /path/to/git/repo/content/uplaods -R`
+ - `sudo chmod 755 /path/to/git/repo/content/uploads -R`
 
 ### Setup WordPress
-2. Copy the `wp-config-sample.php` to `wp-config.php` and add your own config settings. This already has some customisations from the default config file to tell WP where our content is.
+1. Copy the `wp-config-sample.php` to `wp-config.php` and add your own config settings. This already has some customisations from the default config file to tell WP where our content is.
+2. Secure wp-config with permissions:
+ - `sudo chown www-data:www-data /path/to/git/repo/wp-config.php`
+ - `sudo chmod 600 /path/to/git/repo/wp-config.php`.
+2. Setup the WordPress database.
+ - If starting from scratch, navigate to your new site through a browser and create the db using the 'famous five-minute WordPress Installation process'.
+ - If you're bringing a database over from another install, I suggest the 'duplicator' plugin. I've had a lot of success moving wordpress databases around with that one. Make sure that when you create the duplicator backup, you choose 'database only' mode.
 
 ## Updating

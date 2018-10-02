@@ -74,3 +74,7 @@ header#masthead {
   /*background-color:#d94553!important;*/
 }
 
+body:not(.logged-in) .widget_bp_core_login_widget.buddypress.widget {
+  margin-bottom: 0!important;
+}
+

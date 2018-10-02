@@ -35,12 +35,12 @@ if ( !function_exists( 'get_home_path' ) ) require_once( dirname(__FILE__) . '/.
 
 
 
+
 // Require Guzzle for making direct HTTP requests
 require_once "vendor/autoload.php";
 use GuzzleHttp\Client;
 
 include plugin_dir_path( __FILE__ ) . "class-my-bp-groups-widget.php";
-
 /*
 All the files with names starting with "tbl_" contain AJAX functions for querying the database.
 They use DataTables Editor to make the connection, to get, edit and create records in the database.
@@ -109,7 +109,8 @@ class Soils_Data_Plugin {
     return array(
       'user_id' => get_current_user_id(),
       'site_url' => get_site_url(),
-      'ajax_url' => admin_url('admin-ajax.php'),
+      //'ajax_url' => admin_url('admin-ajax.php'),
+      'ajax_url' => 'http://localhost/ccrp_soils_wp/wp-admin/admin-ajax.php',
       'mustache_url' => plugin_dir_url(__FILE__) . "views",
       'nonce' => wp_create_nonce('pa_nonce'),
       'node_url' => NODE_URL,
@@ -178,10 +179,6 @@ class Soils_Data_Plugin {
     wp_register_script( 'qr-script', plugin_dir_url( __FILE__ ) . 'js/node_modules/qrcodejs/qrcode.min.js', array( 'jquery' ), time(), true );
     wp_enqueue_script("qr-script");
 
-    //custom files:
-    wp_register_script('qr-codes', plugin_dir_url(__FILE__) . "js/code-builder.js", array('jquery'),time(),true);
-    wp_localize_script('qr-codes', 'vars', $localize);
-    wp_enqueue_script('qr-codes');
 
   }
 
@@ -190,13 +187,13 @@ class Soils_Data_Plugin {
   // *******************************
 
   //run this function inside any WP AJAX datatables editor function. It will replace the 'action' property (needed to tell WordPress which of the AJAX functions to run) with the dt_action (needed so DataTables Editor knows whether to run a Create, Replace or Remove function on the database)
-  public function replace_dt_action($post){
-    if(isset($post['dt_action']) && isset($post['action'])) {
-      $post['action'] = $post['dt_action'];
-      unset($post['dt_action']);
+  public function replace_dt_action($request){
+    if(isset($request['dt_action']) && isset($request['action'])) {
+      $request['action'] = $request['dt_action'];
+      unset($request['dt_action']);
     }
 
-    return $post;
+    return $request;
   }
 
   // *****************************************************
@@ -460,7 +457,7 @@ function create_community_barcodes() {
       $results[$x]["end_div"] = "</div>";
     }
     else {
-            $results[$x]["start_div"] = "<div class='row'>";
+      $results[$x]["start_div"] = "<div class='row'>";
       $results[$x]["end_div"] = "";
     }
 
@@ -492,5 +489,10 @@ function update_barcodes(){
 }
 
 
+
+
 // Initialize the plugin
 $soils_data = new Soils_Data_Plugin();
+
+
+include plugin_dir_path( __FILE__ ) . "custom-buddypress-tab.php";

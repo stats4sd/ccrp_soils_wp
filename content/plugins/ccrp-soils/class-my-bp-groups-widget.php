@@ -63,99 +63,109 @@ class my_bp_groups extends WP_Widget {
 
     if($user_id !== 0) {
 
-    extract( $args );
+      extract( $args );
 
-    if ( empty( $instance['title'] ) ) {
-      $instance['title'] = __( 'My Projects');
-    }
+      if ( empty( $instance['title'] ) ) {
+        $instance['title'] = __( 'My Projects');
+      }
 
-    /**
-     * Filters the title of the Groups widget.
-     *
-     * @since 1.8.0
-     * @since 2.3.0 Added 'instance' and 'id_base' to arguments passed to filter.
-     *
-     * @param string $title    The widget title.
-     * @param array  $instance The settings for the particular instance of the widget.
-     * @param string $id_base  Root ID for all widgets of this type.
-     */
-    $title = apply_filters( 'widget_title', $instance['title'], $instance, $this->id_base );
+      /**
+       * Filters the title of the Groups widget.
+       *
+       * @since 1.8.0
+       * @since 2.3.0 Added 'instance' and 'id_base' to arguments passed to filter.
+       *
+       * @param string $title    The widget title.
+       * @param array  $instance The settings for the particular instance of the widget.
+       * @param string $id_base  Root ID for all widgets of this type.
+       */
+      $title = apply_filters( 'widget_title', $instance['title'], $instance, $this->id_base );
 
-    /**
-     * Filters the separator of the group widget links.
-     *
-     * @since 2.4.0
-     *
-     * @param string $separator Separator string. Default '|'.
-     */
-    $separator = apply_filters( 'bp_groups_widget_separator', '|' );
+      /**
+       * Filters the separator of the group widget links.
+       *
+       * @since 2.4.0
+       *
+       * @param string $separator Separator string. Default '|'.
+       */
+      $separator = apply_filters( 'bp_groups_widget_separator', '|' );
 
-    echo $before_widget;
+      echo $before_widget;
 
-    $title = ! empty( $instance['link_title'] ) ? '<a href="' . bp_get_groups_directory_permalink() . '">' . $title . '</a>' : $title;
+      $title = ! empty( $instance['link_title'] ) ? '<a href="' . bp_get_groups_directory_permalink() . '">' . $title . '</a>' : $title;
 
-    echo $before_title . $title . $after_title;
+      echo $before_title . $title . $after_title;
 
-    $max_groups = ! empty( $instance['max_groups'] ) ? (int) $instance['max_groups'] : 5;
+      $max_groups = ! empty( $instance['max_groups'] ) ? (int) $instance['max_groups'] : 5;
 
-    $group_args = array(
-      'user_id'         => $user_id,
-      'type'            => $instance['group_default'],
-      'per_page'        => $max_groups,
-      'max'             => $max_groups,
-    );
+      $group_args = array(
+        'user_id'         => $user_id,
+        'type'            => $instance['group_default'],
+        'per_page'        => $max_groups,
+        'max'             => $max_groups,
+      );
 
-    // Back up the global.
-    $old_groups_template = $groups_template;
+      // Back up the global.
+      $old_groups_template = $groups_template;
 
-    ?>
+      ?>
 
-    <?php if ( bp_has_groups( $group_args ) ) : ?>
+      <?php if ( bp_has_groups( $group_args ) ) : ?>
 
 
-      <ul id="groups-list" class="item-list" aria-live="polite" aria-relevant="all" aria-atomic="true">
-        <?php while ( bp_groups() ) : bp_the_group(); ?>
-          <li <?php bp_group_class(); ?>>
-            <div class="item-avatar">
-              <a href="<?php bp_group_permalink() ?>" class="bp-tooltip" data-bp-tooltip="<?php bp_group_name() ?>"><?php bp_group_avatar_thumb() ?></a>
-            </div>
-
-            <div class="item">
-              <div class="item-title"><?php bp_group_link(); ?></div>
-              <div class="item-meta">
-                <span class="activity">
-                <?php
-                  if ( 'newest' == $instance['group_default'] ) {
-                    printf( __( 'created %s', 'buddypress' ), bp_get_group_date_created() );
-                  } elseif ( 'popular' == $instance['group_default'] ) {
-                    bp_group_member_count();
-                  } else {
-                    printf( __( 'active %s', 'buddypress' ), bp_get_group_last_active() );
-                  }
-                ?>
-                </span>
+        <ul id="groups-list" class="item-list" aria-live="polite" aria-relevant="all" aria-atomic="true">
+          <?php while ( bp_groups() ) : bp_the_group(); ?>
+            <li <?php bp_group_class(); ?>>
+              <div class="item-avatar">
+                <a href="<?php bp_group_permalink() ?>" class="bp-tooltip" data-bp-tooltip="<?php bp_group_name() ?>"><?php bp_group_avatar_thumb() ?></a>
               </div>
-            </div>
-          </li>
 
-        <?php endwhile; ?>
-      </ul>
-      <?php wp_nonce_field( 'groups_widget_groups_list', '_wpnonce-groups' ); ?>
-      <input type="hidden" name="groups_widget_max" id="groups_widget_max" value="<?php echo esc_attr( $max_groups ); ?>" />
+              <div class="item">
+                <div class="item-title"><?php bp_group_link(); ?></div>
+                <div class="item-meta">
+                  <span class="activity">
+                  <?php
+                    if ( 'newest' == $instance['group_default'] ) {
+                      printf( __( 'created %s', 'buddypress' ), bp_get_group_date_created() );
+                    } elseif ( 'popular' == $instance['group_default'] ) {
+                      bp_group_member_count();
+                    } else {
+                      printf( __( 'active %s', 'buddypress' ), bp_get_group_last_active() );
+                    }
+                  ?>
+                  </span>
+                </div>
+              </div>
+            </li>
 
-    <?php else: ?>
+          <?php endwhile; ?>
+        </ul>
+        <?php wp_nonce_field( 'groups_widget_groups_list', '_wpnonce-groups' ); ?>
+        <input type="hidden" name="groups_widget_max" id="groups_widget_max" value="<?php echo esc_attr( $max_groups ); ?>" />
 
-      <div class="widget-error">
-        <?php _e('You are not assigned to any projects.', 'buddypress') ?>
-      </div>
+      <?php else: ?>
 
-    <?php endif; ?>
+        <div class="widget-error">
+          <?php _e('You are not assigned to any projects.', 'buddypress') ?>
+        </div>
 
-    <?php echo $after_widget;
+      <?php endif; ?>
 
-    // Restore the global.
-    $groups_template = $old_groups_template;
+      <?php echo $after_widget;
+
+      // Restore the global.
+      $groups_template = $old_groups_template;
     } //endif
+    else {
+
+      $instance['title'] = __( 'Register');
+      $title = apply_filters( 'widget_title', $instance['title'], $instance, $this->id_base );
+      $separator = apply_filters( 'bp_groups_widget_separator', '|' );
+
+      echo $before_widget;
+
+      echo "<a href='" . get_home_url() . "/register'>Register an account</a>";
+    }
   }
 
   /**

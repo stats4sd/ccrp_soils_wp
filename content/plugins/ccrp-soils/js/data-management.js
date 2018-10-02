@@ -1,5 +1,5 @@
 var editor;
-var projectFormsTable;
+var projectFormsTable = [];
 var questions;
 var choices;
 jQuery(document).ready(function($){
@@ -8,29 +8,6 @@ jQuery(document).ready(function($){
   console.log("current user", vars.user_group_ids);
 
   setup_project_forms_table();
-
-  project_list = vars.user_groups;
-  console.log("projects = ",project_list)
-
-  $('#project_list').html("<div class='list-group'>");
-  project_list.forEach(function(item,index){
-
-    //item is group_id; 
-    //
-    //get group name and kobotools ID:
-    group_name = item.name;
-    kobotools_account = item.kobotools_account;
-    slug = item.slug
-
-    if(kobotools_account==""){
-      kobotools_account = "**blank**"
-    }
-
-    $('#project_list').append("<div class='list-group-item'><span class='font-weight-bold'>" + group_name+" </span>  <a href='"+vars.site_url+"/groups/"+slug+"'>View / Edit project</a></div>");
-  })
-
-    $('#project_list').append("</div>");
-
 
 
 // PreGet Data for form prep:
@@ -57,70 +34,70 @@ jQuery(document).ready(function($){
 
     choices = choicesSet;
   })
+  .fail(function(){
+    questions = 'error';
+    console.log("could not get xls form choices");
+  })
 
 
 }); //end doc ready;
 
 
-function update_locations(id,kobo_id=null){
+// function update_locations(id,kobo_id=null){
 
-  var data = projectFormsTable.rows(id).data().toArray();
-  console.log(data);
+//   var data = projectFormsTable.rows(id).data().toArray();
+//   console.log(data);
 
-  var send = {}
-  send.project_id = data[0].project_forms_info.project_id;
-  console.log("send",send);
-  //get locations data from database
-  getLocations = getData(vars,"dt_locations_csv",send)
-    .done(function(response){
-      console.log(response);
+//   var send = {}
+//   send.project_id = data[0].project_forms_info.project_id;
+//   console.log("send",send);
+//   //get locations data from database
+//   getLocations = getData(vars,"dt_locations_csv",send)
+//     .done(function(response){
+//       console.log(response);
 
-      locations = response.data.map(function(item,index){
-        return item.locations_csv;
-      })
-      console.log("got locations! = ", locations);
-
-
-      if(!kobo_id){
-        if(data[0].project_forms_info.form_kobo_id != null && data[0].project_forms_info.form_kobo_id != "") {
-          kobo_id = data[0].project_forms_info.form_kobo_id;
-        }
-        else {
-          console.log("no kobo form id defined / found!");
-          return;
-        }
-      }
-
-      csvUpload = {
-        data_type: "media",
-        data_value: "locations.csv",
-        xform: kobo_id,
-        data_file: locations
-      }
-
-      console.log("csvToUpload = ",csvUpload)
-
-      //add locations csv file to the form
-      jQuery.ajax({
-        url: vars.node_url + "/addCsv",
-        method: "POST",
-        dataType: "json",
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify(csvUpload),
-        success: function(response){
-          console.log("response from csv upload = ",response);
-        },
-        error: function(response){
-          console.log("error from csv upload = ",response);
-        }
-      }) //end sharing requiest
-
-    })
-
-     
+//       locations = response.data.map(function(item,index){
+//         return item.locations_csv;
+//       })
+//       console.log("got locations! = ", locations);
 
 
-}
+//       if(!kobo_id){
+//         if(data[0].project_forms_info.form_kobo_id != null && data[0].project_forms_info.form_kobo_id != "") {
+//           kobo_id = data[0].project_forms_info.form_kobo_id;
+//         }
+//         else {
+//           console.log("no kobo form id defined / found!");
+//           return;
+//         }
+//       }
+
+//       csvUpload = {
+//         data_type: "media",
+//         data_value: "locations.csv",
+//         xform: kobo_id,
+//         data_file: locations
+//       }
+
+//       console.log("csvToUpload = ",csvUpload)
+
+//       //add locations csv file to the form
+//       jQuery.ajax({
+//         url: vars.node_url + "/addCsv",
+//         method: "POST",
+//         dataType: "json",
+//         contentType: "application/json; charset=utf-8",
+//         data: JSON.stringify(csvUpload),
+//         success: function(response){
+//           console.log("response from csv upload = ",response);
+//         },
+//         error: function(response){
+//           console.log("error from csv upload = ",response);
+//         }
+//       }) //end sharing requiest
+
+//     })
+// }
 
 function deploy_form(id){
   var form = {};
@@ -216,10 +193,6 @@ function deploy_form(id){
 
         }
         else {
-
-//          setButtons();
-  //        user_alert("Test form was uploaded but encountered ODK errors","warning","alert-space");
-
           
           text = "ODK error: " + response.msg.text;
           console.log("error, ", response.msg.text)
@@ -316,11 +289,11 @@ function setup_project_forms_table() {
   var projectFormsColumns = [
     {data: "project_forms_info.id", title: "ID", visible: false},
     {data: "project_forms_info.project_id", title: "Project ID", visible: false},
-    {data: "project_forms_info.project_name", title: "Project Name", visible: true},
+    {data: "project_forms_info.project_name", title: "Project Name", visible: false},
     {data: "project_forms_info.project_kobotools_account", title: "Project Name", visible: false},
     {data: "project_forms_info.project_slug", title: "Project Slug", visible: false},
     {data: "project_forms_info.form_id", title: "Form ID", visible: false},
-    {data: "xls_forms.form_title", title: "Form Type", visible: true},
+    {data: "xls_forms.form_title", title: "Form Name", visible: true},
     {data: "project_forms_info.form_kobo_id", title: "Kobotools Form ID", visible: true},
     {data: "project_forms_info.project_kobotools_account", title: "Edit",visible:true, render: function(data,type,row,meta){
       console.log("row = ",row);
@@ -334,26 +307,38 @@ function setup_project_forms_table() {
       //if form is deployed, suggest updating locations csv file
       if(row.project_forms_info.form_kobo_id != null && row.project_forms_info.form_kobo_id != ""){
 
-        //only offer locations update for intake form:
-        if(row.project_forms_info.form_id == 1){
-          return "<button class='btn btn-link' onclick='update_locations("+meta.row+")'>update locations csv</button'"  
-        }
+        // //only offer locations update for intake form:
+        // if(row.project_forms_info.form_id == 1){
+        //   return "<button class='btn btn-link' onclick='update_locations("+meta.row+")'>update locations csv</button'"
+        // }
         return "form deployed"
-        
       }
-        return "<button class='btn btn-link' onclick='deploy_form("+meta.row+")'>deploy form</button>";
+
+      return "<button class='btn btn-link' onclick='deploy_form("+meta.row+")'>deploy form</button>";
     }},
   ];
 
-  //datatables parameters
-  projectFormsParams = {
-    vars: vars,
-    action: "dt_project_forms",
-    target: "DataTable",
-    columns: projectFormsColumns,
-    }
+  project_list = vars.user_groups;
 
-  //call datatables function
-  projectFormsTable = newDatatable(projectFormsParams);
+  project_list.forEach(function(project){
+
+    console.log("project",project);
+
+    vars.project_id = project.id;
+
+    //datatables parameters
+    projectFormsParams = {
+      vars: vars,
+      action: "dt_project_forms",
+      target: "forms_table_" + project.id,
+      columns: projectFormsColumns,
+      }
+
+    //call datatables function
+    table = newDatatable(projectFormsParams);
+    projectFormsTable.push(table);
+
+  })
+
 
 }

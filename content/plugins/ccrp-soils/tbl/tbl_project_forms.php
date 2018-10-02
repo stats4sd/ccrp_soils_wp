@@ -23,24 +23,15 @@ add_action('wp_ajax_dt_project_forms','dt_project_forms');
 function dt_project_forms() {
 
   //include DataTables php script
-  include get_home_path() . "content/plugins/wordpress-datatables/DataTablesEditor/php/DataTables.php";
-
-  if($_SERVER['REQUEST_METHOD'] === "POST"){
-    if(isset($_POST['dt_action']) && isset($_POST['action'])) {
-      $_POST['action'] = $_POST['dt_action'];
-      unset($_POST['dt_action']);
-    }
-    elseif(isset($_POST['action'])) {
-      unset($_POST['action']);
-    }
-  }
-
-  //checks that the correct Nonce was passed to show the request came from the WordPress website.
+  include get_home_path() . "/content/plugins/wordpress-datatables/DataTablesEditor/php/DataTables.php";
   check_ajax_referer('pa_nonce', 'secure');
+    if(isset($request['dt_action']) && isset($request['action'])) {
+      $request['action'] = $request['dt_action'];
+      unset($request['dt_action']);
+    }
 
   //get request variables;
-  $user_group_id = $_REQUEST['vars']['user_group_ids'] ?? null;
-  
+  $project_id = $_REQUEST['vars']['project_id'] ?? null;
 
   //setup the editor object
   $editor = Editor::inst( $db, 'project_forms_info' )
@@ -70,17 +61,9 @@ function dt_project_forms() {
   )
   ->leftJoin('xls_forms','xls_forms.id','=','project_forms_info.form_id');
 
-  if($user_group_id) {
+  if($project_id){
     $editor = $editor
-
-  if($user_group_id){
-    $editor = $editor
-    ->where( function($q) use ($user_group_id) {
-      $q->where("project_forms_info.project_id",'0',"=");
-      foreach($user_group_id as $group){
-        $q->or_where("project_forms_info.project_id",$group);
-      }
-    })
+    ->where("project_forms_info.project_id","=",$project_id);
   }
 
   $data = $editor

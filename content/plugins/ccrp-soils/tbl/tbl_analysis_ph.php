@@ -19,19 +19,8 @@ add_action('wp_ajax_dt_analysis_ph','dt_analysis_ph');
 function dt_analysis_ph() {
 
   include get_home_path() . "content/plugins/wordpress-datatables/DataTablesEditor/php/DataTables.php";
-
-  if($_SERVER['REQUEST_METHOD'] === "POST"){
-    if(isset($_POST['dt_action']) && isset($_POST['action'])) {
-      $_POST['action'] = $_POST['dt_action'];
-      unset($_POST['dt_action']);
-    }
-    elseif(isset($_POST['action'])) {
-      unset($_POST['action']);
-    }
-  }
-
-  //checks that the correct Nonce was passed to show the request came from the WordPress website.
   check_ajax_referer('pa_nonce', 'secure');
+  $_REQUEST = replace_dt_action($_REQUEST);
 
 
   // Build our Editor instance and process the data coming from _POST
@@ -52,8 +41,6 @@ function dt_analysis_ph() {
   $id = $_REQUEST['id'] ?? null;
 
   if($id){
-
-    if($id){
     //add where filter to $editor:
     $editor = $editor->where('analysis_ph.id',$id);
   }
