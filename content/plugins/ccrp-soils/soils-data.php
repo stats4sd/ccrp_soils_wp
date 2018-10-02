@@ -109,8 +109,8 @@ class Soils_Data_Plugin {
     return array(
       'user_id' => get_current_user_id(),
       'site_url' => get_site_url(),
-      //'ajax_url' => admin_url('admin-ajax.php'),
-      'ajax_url' => 'http://localhost/ccrp_soils_wp/wp-admin/admin-ajax.php',
+      'ajax_url' => admin_url('admin-ajax.php'),
+      //'ajax_url' => 'http://localhost/ccrp_soils_wp/wp-admin/admin-ajax.php',
       'mustache_url' => plugin_dir_url(__FILE__) . "views",
       'nonce' => wp_create_nonce('pa_nonce'),
       'node_url' => NODE_URL,
