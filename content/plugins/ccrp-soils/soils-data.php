@@ -376,6 +376,8 @@ add_action('wp_ajax_create_barcode','create_barcode');
 add_action('wp_ajax_nopriv_create_barcode','create_barcode');
 function create_barcode() {
   GLOBAL $wpdb;
+  
+  check_ajax_referer('pa_nonce', 'secure');
 
 
   //if a root_id has been passed, setup the codes based on that.

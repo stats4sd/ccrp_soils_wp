@@ -23,12 +23,22 @@ add_action('wp_ajax_dt_soils','dt_soils');
 function dt_soils() {
 
   //include DataTables php script
-  include get_home_path() . "content/plugins/wordpress-datatables/DataTablesEditor/php/DataTables.php";
+  include WP_PLUGIN_DIR . "/wordpress-datatables/DataTablesEditor/php/DataTables.php";
   check_ajax_referer('pa_nonce', 'secure');
-  $_REQUEST = replace_dt_action($_REQUEST);
+
+  if($_SERVER['REQUEST_METHOD'] === "POST"){
+    if(isset($_POST['dt_action']) && isset($_POST['action'])) {
+      $_POST['action'] = $_POST['dt_action'];
+      unset($_POST['dt_action']);
+    }
+    elseif(isset($_POST['action'])) {
+      unset($_POST['action']);
+    }
+  }
+
 
   $user_group_id = $_REQUEST['vars']['user_group_id'] ?? null;
-
+  $project_id = $_REQUEST['vars']['project_id'] ?? null;;
   
   //setup the editor object
   $editor = Editor::inst( $db, 'samples' )
@@ -96,6 +106,11 @@ function dt_soils() {
       Field::inst('weight_soil')
     )
   );
+
+  if($project_id){
+    $editor = $editor
+    ->where("samples.project_id",$project_id);
+  }
 
   if($user_group_id){
     $editor = $editor

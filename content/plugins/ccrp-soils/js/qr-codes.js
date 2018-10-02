@@ -68,7 +68,7 @@ function setup_codeSheet(codes,farmer=null){
 function getCodes(number,farmer=null){
   data = {
     "action":"create_barcode",
-    "nonce":vars.pa_nonce,
+    "secure":vars.nonce,
     "number":number
   }
 

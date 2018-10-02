@@ -19,16 +19,24 @@ use
 
 //add the action into the WordPress Ajax hook, so it can be called with WP authentication / security:
 add_action('wp_ajax_dt_project_forms','dt_project_forms');
+add_action('wp_ajax_nopriv_dt_project_forms','dt_project_forms');
+
 
 function dt_project_forms() {
 
   //include DataTables php script
-  include get_home_path() . "/content/plugins/wordpress-datatables/DataTablesEditor/php/DataTables.php";
+  include WP_PLUGIN_DIR . "/wordpress-datatables/DataTablesEditor/php/DataTables.php";
   check_ajax_referer('pa_nonce', 'secure');
-    if(isset($request['dt_action']) && isset($request['action'])) {
-      $request['action'] = $request['dt_action'];
-      unset($request['dt_action']);
+
+  if($_SERVER['REQUEST_METHOD'] === "POST"){
+    if(isset($_POST['dt_action']) && isset($_POST['action'])) {
+      $_POST['action'] = $_POST['dt_action'];
+      unset($_POST['dt_action']);
     }
+    elseif(isset($_POST['action'])) {
+      unset($_POST['action']);
+    }
+  }
 
   //get request variables;
   $project_id = $_REQUEST['vars']['project_id'] ?? null;
@@ -63,7 +71,7 @@ function dt_project_forms() {
 
   if($project_id){
     $editor = $editor
-    ->where("project_forms_info.project_id","=",$project_id);
+    ->where("project_forms_info.project_id",$project_id);
   }
 
   $data = $editor

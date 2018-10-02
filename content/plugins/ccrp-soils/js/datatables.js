@@ -119,10 +119,10 @@ function getDtOptions(params){
     select: true,
     buttons: buttons,
     pageLength: 150,
-    responsive: true,
+    //responsive: true,
     paging: false,
-    scrollY: "40vh",
-    scrollCollapse: true,
+    //scrollY: "40vh",
+    //scrollCollapse: true,
     };
 
     //if buttons_target is specified, modify the DOM rendering option

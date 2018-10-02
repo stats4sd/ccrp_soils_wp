@@ -18,10 +18,19 @@ add_action('wp_ajax_dt_analysis_p','dt_analysis_p');
 
 function dt_analysis_p() {
 
-  include get_home_path() . "content/plugins/wordpress-datatables/DataTablesEditor/php/DataTables.php";
+  //include DataTables php script
+  include WP_PLUGIN_DIR . "/wordpress-datatables/DataTablesEditor/php/DataTables.php";
   check_ajax_referer('pa_nonce', 'secure');
-  $_REQUEST = replace_dt_action($_REQUEST);
 
+  if($_SERVER['REQUEST_METHOD'] === "POST"){
+    if(isset($_POST['dt_action']) && isset($_POST['action'])) {
+      $_POST['action'] = $_POST['dt_action'];
+      unset($_POST['dt_action']);
+    }
+    elseif(isset($_POST['action'])) {
+      unset($_POST['action']);
+    }
+  }
 
 
   // Build our Editor instance and process the data coming from _POST

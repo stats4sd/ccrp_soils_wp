@@ -43,66 +43,10 @@ jQuery(document).ready(function($){
 }); //end doc ready;
 
 
-// function update_locations(id,kobo_id=null){
-
-//   var data = projectFormsTable.rows(id).data().toArray();
-//   console.log(data);
-
-//   var send = {}
-//   send.project_id = data[0].project_forms_info.project_id;
-//   console.log("send",send);
-//   //get locations data from database
-//   getLocations = getData(vars,"dt_locations_csv",send)
-//     .done(function(response){
-//       console.log(response);
-
-//       locations = response.data.map(function(item,index){
-//         return item.locations_csv;
-//       })
-//       console.log("got locations! = ", locations);
-
-
-//       if(!kobo_id){
-//         if(data[0].project_forms_info.form_kobo_id != null && data[0].project_forms_info.form_kobo_id != "") {
-//           kobo_id = data[0].project_forms_info.form_kobo_id;
-//         }
-//         else {
-//           console.log("no kobo form id defined / found!");
-//           return;
-//         }
-//       }
-
-//       csvUpload = {
-//         data_type: "media",
-//         data_value: "locations.csv",
-//         xform: kobo_id,
-//         data_file: locations
-//       }
-
-//       console.log("csvToUpload = ",csvUpload)
-
-//       //add locations csv file to the form
-//       jQuery.ajax({
-//         url: vars.node_url + "/addCsv",
-//         method: "POST",
-//         dataType: "json",
-//         contentType: "application/json; charset=utf-8",
-//         data: JSON.stringify(csvUpload),
-//         success: function(response){
-//           console.log("response from csv upload = ",response);
-//         },
-//         error: function(response){
-//           console.log("error from csv upload = ",response);
-//         }
-//       }) //end sharing requiest
-
-//     })
-// }
-
-function deploy_form(id){
+function deploy_form(table_id,id){
   var form = {};
   //get row data;
-  var data = projectFormsTable.rows(id).data().toArray();
+  var data = projectFormsTable[table_id].rows(id).data().toArray();
   var recordId = data[0].project_forms_info.id;
   var form_type_id = data[0].project_forms_info.form_id;
   console.log(data)
@@ -146,21 +90,24 @@ function deploy_form(id){
           })
           .done(function(response){
             console.log("response from kobo_id db update:",response);
+                      //reload table data;
+          projectFormsTable[table_id].ajax.reload();
           })
           .fail(function(response){
             console.log("fail from kobo_id db update",response);
+                      //reload table data;
+          projectFormsTable[table_id].ajax.reload();
           })
             
 
-          //reload table data;
-          projectFormsTable.ajax.reload();
 
 
 
 
-          if(form_type_id == 1){
-            update_locations(id,form.kobo_id);
-          }
+
+          // if(form_type_id == 1){
+          //   update_locations(id,form.kobo_id);
+          // }
          
 
 
@@ -283,62 +230,446 @@ function prepare_settings(data){
   return settings;
 }
 
+function downloaddata(project){
+  console.log(project)
+
+  vars.project_id = project;
+  soilData = getData(vars,'dt_soils')
+  .done(function(response){
+    response = response.body;
+    console.log(response);
+  })
+}
+
 
 function setup_project_forms_table() {
     //Setup datatables columns:
-  var projectFormsColumns = [
-    {data: "project_forms_info.id", title: "ID", visible: false},
-    {data: "project_forms_info.project_id", title: "Project ID", visible: false},
-    {data: "project_forms_info.project_name", title: "Project Name", visible: false},
-    {data: "project_forms_info.project_kobotools_account", title: "Project Name", visible: false},
-    {data: "project_forms_info.project_slug", title: "Project Slug", visible: false},
-    {data: "project_forms_info.form_id", title: "Form ID", visible: false},
-    {data: "xls_forms.form_title", title: "Form Name", visible: true},
-    {data: "project_forms_info.form_kobo_id", title: "Kobotools Form ID", visible: true},
-    {data: "project_forms_info.project_kobotools_account", title: "Edit",visible:true, render: function(data,type,row,meta){
-      console.log("row = ",row);
 
-      //if no kobotools account is defined, direct user to add one:
-      if(data == "" || data == null){
-        slug = row.project_forms_info.project_slug
-        return "<a class='btn btn-link' href='"+vars.site_url + "/groups/" + slug+"'>Add Kobotools Account</a>";
-      }
-
-      //if form is deployed, suggest updating locations csv file
-      if(row.project_forms_info.form_kobo_id != null && row.project_forms_info.form_kobo_id != ""){
-
-        // //only offer locations update for intake form:
-        // if(row.project_forms_info.form_id == 1){
-        //   return "<button class='btn btn-link' onclick='update_locations("+meta.row+")'>update locations csv</button'"
-        // }
-        return "form deployed"
-      }
-
-      return "<button class='btn btn-link' onclick='deploy_form("+meta.row+")'>deploy form</button>";
-    }},
-  ];
 
   project_list = vars.user_groups;
 
   project_list.forEach(function(project){
 
+    var projectFormsColumns = [
+      {data: "project_forms_info.id", title: "ID", visible: false},
+      {data: "project_forms_info.project_id", title: "Project ID", visible: false},
+      {data: "project_forms_info.project_name", title: "Project Name", visible: false},
+      {data: "project_forms_info.project_kobotools_account", title: "Project Name", visible: false},
+      {data: "project_forms_info.project_slug", title: "Project Slug", visible: false},
+      {data: "project_forms_info.form_id", title: "Form ID", visible: false},
+      {data: "xls_forms.form_title", title: "Form Name", visible: true, width:"40%"},
+      {data: "project_forms_info.form_kobo_id", title: "Kobotools Form ID", visible: true, width:"20%"},
+      {data: "project_forms_info.count_records", title: "Number of Collected Records", visible: true, witdh:"5%"},
+      {data: "project_forms_info.project_kobotools_account", title: "Status",visible:true, render: function(data,type,row,meta){
+        console.log("row = ",row);
+
+        //if no kobotools account is defined, direct user to add one:
+        if(data == "" || data == null){
+          
+        }
+
+        //if form is deployed, suggest updating locations csv file
+        if(row.project_forms_info.form_kobo_id != null && row.project_forms_info.form_kobo_id != ""){
+
+          // //only offer locations update for intake form:
+          // if(row.project_forms_info.form_id == 1){
+          //   return "<button class='btn btn-link' onclick='update_locations("+meta.row+")'>update locations csv</button'"
+          // }
+          return "form deployed"
+        }
+
+        return "<button class='btn btn-link' onclick='deploy_form("+project.id+","+meta.row+")'>deploy</button>";
+      }},
+    ];
+
     console.log("project",project);
 
     vars.project_id = project.id;
-
+    project_id = project.id
     //datatables parameters
     projectFormsParams = {
       vars: vars,
       action: "dt_project_forms",
       target: "forms_table_" + project.id,
       columns: projectFormsColumns,
+      options: {
+        dom: "tpB",
+        select: false,
+        pageLength: 150,
+        buttons: [
+        {
+            text: "Pull new records from Kobotoolbox",
+            action: function(e,dt,node,config){
+              update_counts(dt);
+            }
+          },
+        ],
+      }
       }
 
     //call datatables function
     table = newDatatable(projectFormsParams);
-    projectFormsTable.push(table);
+
+    projectFormsTable[project_id] = table;
 
   })
 
 
+}
+
+/*************** COPIED FROM NRC *********************/
+
+////// Functions to update form record counts and pull new records from KOBO into the MySQL database:
+///
+function update_counts(dt){
+  //get list of forms for current view
+  console.log("checking Kobotoolbox for new submissions");
+  console.log(dt.column(0).data());
+
+  forms = dt.data().toArray();
+
+
+  var requests = [];
+
+  //for Each formId, setup request, then push to promises;
+  forms.forEach(function(form,index){
+    formId = form.project_forms_info.form_kobo_id;
+
+    console.log(index,formId);
+      // return false;
+
+
+    existingIds = form.project_forms_info.id_list
+    console.log("existingIds = ",existingIds)
+    if(existingIds){
+      existingIds = existingIds.split(",");
+      console.log("splitIds = ",existingIds)
+    }
+
+    //split into array:
+
+
+    if(formId != null) {
+
+      request = requestFormCount(formId);
+      requests.push(request);
+
+      request.done(function(response){
+        
+        if(response.statusCode != 200) {
+          throw("warning - unable to reach Kobotoolbox site to retrieve new data. Please check that the Kobotoolbox site is currently accessible through the browser");
+        }
+        formCountResponse(dt,response,form)
+      });
+    }
+
+
+  });
+
+
+  jQuery.when.apply(jQuery,requests).then(function(responses){
+    console.log();
+    user_alert("All forms in current view checked and syncronised","info","alert-space");
+  })
+}
+
+function requestFormCount(formId) {
+  request = jQuery.ajax({
+    url: vars.node_url + "/countRecords",
+    method: "POST",
+    dataType: "json",
+    contentType: "application/json; charset=utf-8",
+    data: JSON.stringify({
+      kobo_id: formId
+    })
+  })
+
+  return request;
+}
+
+function formCountResponse(dt,response,form,existing_ids){
+  db_count = form.project_forms_info.count_records
+  console.log("db count = ",db_count)
+  if(db_count == null){
+    db_count = 0;
+  }
+  console.log("function response for",response);
+  //check count against count:
+  if(db_count == response.count){
+    console.log("kobo_form with id" + response.kobo_id + " has same number of records as database")
+    return;
+  }
+
+  if(db_count > response.count){
+    console.log("kobo_form with id" + response.kobo_id + "has fewer records than database")
+    return;
+  }
+
+  if(db_count < response.count){
+    console.log("kobo_form with id" + response.kobo_id + " has more records - starting to pull them");
+    console.log("getting data but not existing Ids = ",form.project_forms_info.id_list);
+    existing_ids = form.project_forms_info.id_list;
+    if(existing_ids){
+      existing_ids = existing_ids.split(",");
+    }
+
+    pullRequest = jQuery.ajax({
+      url: vars.node_url + "/pullData",
+      method: "POST",
+      dataType: "json",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        kobo_ids: [response.kobo_id],
+        existing_ids: existing_ids
+      })
+    })
+
+    pullRequest.done(function(response){
+      console.log("data pulled");
+      //add pulled data to collected_data table:
+      response = response.body;
+      console.log("response, ",response);
+
+      savedata = {};
+      response.forEach(function(row,index){
+        
+
+        //insert functions from original node JS to parse into main tables:
+        parse_data_into_tables(row,form);
+
+
+        record = JSON.stringify(row);
+        
+        //remove / from keys:
+        record = record.replace(/\//g,"_");
+        //console.log("record:",record)
+        savedata[index] = {};
+        savedata[index]["DT_RowId"] = index;
+        savedata[index]["xls_form_submissions"] = {
+          form_kobo_id: row._form_kobo_id,
+          record_data: record,
+          uuid: row._uuid
+        }
+      })
+
+      console.log("would save",savedata);
+      //forms_table.ajax.reload().draw()
+
+      jQuery.ajax({
+        url: vars.ajax_url,
+        dataType: "json",
+        method:"POST",
+        data:{
+          action:"dt_xls_form_submissions",
+          secure:vars.nonce,
+          dt_action:"create",
+          data: savedata
+        }
+      })
+      .done(function(response){
+        console.log("response from db: ",response);
+        // soils_table.ajax.reload();
+        dt.ajax.reload();
+      })
+
+    })
+    console.log();
+    user_alert("New records successfully pulled from Kobo","success","alert-space");
+    return;
+  }
+}
+
+
+function parse_data_into_tables(data,form){
+  console.log("form here is",form);
+  formType = form.xls_forms.form_id;
+  projectId = form.project_forms_info.project_id
+  
+
+  //work out which form type it is...
+  if(formType == "ccrp_soil_intake"){
+    // add inserts for community; farmer; plot etc...
+
+
+    // *****************************************************
+    // Insert Samples
+    // *****************************************************
+    var sampleValues = {};
+
+
+    //for each sample within this plot...
+    for (var y = 0; y < data['sample_info'].length; y++) {
+      //wrap inside self-serving function to avoid async issues with x and ys ...
+      console.log("sample ID = ",data['sample_info'][y]['sample_info/sample_id']);
+      console.log("farmer ID = ",data['farm_id']);
+
+      sampleDate = data['sample_info'][y]['sample_info/sampling_date'];
+      console.log("sampleDate = ",sampleDate);
+      console.log(typeof sampleDate);
+      dateLength = sampleDate.length;
+      if(dateLength > 9){
+        saempleDate = sampleDate.substring(0,10);
+      }
+
+        (function(y) {
+          sampleValues[y] = {};
+          sampleValues[y]["Dt_RowId"] = y;
+          sampleValues[y]["samples"] = {
+            id: data['sample_info'][y]['sample_info/sample_id'],
+            farmer_id: data['farm_id'],
+            //plot_name: data['plot_name'],
+            //plot_gradient: data['plot_gradient'],
+            //farmer_kn_soil: data['farmer_knowledge_soil_type'],
+            soil_texture: data['sample_info'][y]['sample_info/soil_texture'],
+            sampling_date: sampleDate,
+            sampling_depth: data['sample_info'][y]['sample_info/sampling_depth'],
+            sample_comments: data['sample_info'][y]['sample_info/sample_comments'],
+            collector_name: data['_submitted_by'],
+            project_id: projectId
+          }
+       })(y); //end function(y);
+    } //end for loop to go around the samples
+
+    //insert Sample values into Db via editor ajax function:
+    jQuery.ajax({
+      url: vars.ajax_url,
+      dataType: "json",
+      method:"POST",
+      data:{
+        action:"dt_samples",
+        secure:vars.nonce,
+        dt_action:"create",
+        data: sampleValues
+      }
+    })
+    .done(function(response){
+      console.log("response from inserting samples to db: ",response);
+    })
+
+
+
+  } 
+
+  if(formType == "ccrp_soil_p") {
+    p = {};
+    p[0] = {};
+    p[0]["Dt_RowId"] = 0;
+    p[0]["analysis_p"] = {
+      sample_id: data['sample_id'],
+      analysis_date: data['analysis_date'],
+      weight_soil: data['weight_soil'],
+      vol_extract: data['vol_extract'],
+      vol_topup: data['vol_topup'],
+      color: data['color'],
+      cloudy: data['cloudy'],
+      raw_conc: data['Raw_conc'],
+      olsen_p: data['olsen_p'],
+      blank_water: data['blank_water'],
+      correct_moisture: data['correct_moisture'],
+      moisture: data['moisture'],
+      olsen_p_corrected: data['olsen_p_corrected']
+
+    }
+
+    console.log("final p",p);
+
+    jQuery.ajax({
+      url: vars.ajax_url,
+      dataType: "json",
+      method:"POST",
+      data:{
+        action:"dt_analysis_p",
+        secure:vars.nonce,
+        dt_action:"create",
+        data: p
+      }
+    })
+    .done(function(response){
+      console.log("response from inserting p to db: ",response);
+    })
+
+  }
+
+    if(formType == "ccrp_soil_ph") {
+    ph = {};
+    ph[0] = {};
+    ph[0]["Dt_RowId"] = 0;
+    ph[0]["analysis_ph"] = {
+      sample_id: data['sample_id'],
+      analysis_date: data['analysis_date'],
+      weight_soil: data['weight_soil'],
+      vol_water: data['vol_water'],
+      reading_ph: data['reading_ph'],
+      stability: data['stability']
+    }
+
+    console.log("ph",ph);
+
+    jQuery.ajax({
+      url: vars.ajax_url,
+      dataType: "json",
+      method:"POST",
+      data:{
+        action:"dt_analysis_ph",
+        secure:vars.nonce,
+        dt_action:"create",
+        data: ph
+      }
+    })
+    .done(function(response){
+      console.log("response from inserting ph to db: ",response);
+    })
+
+  }
+
+    if(formType == "ccrp_soil_poxc") {
+    poxc = {};
+    poxc[0] = {};
+
+    if(data.hasOwnProperty('moisture')){
+        if(data.estimated_soilmoisture != null && data.estimated_soilmoisture != 0 && data.estimated_soilmoisture != "") {
+            soil_moisture = data.estimated_soilmoisture;
+        }
+        else {
+            soil_moisture = 0;
+        }
+    }
+    else {
+        soil_moisture = 0;
+    }
+
+    poxc[0]["Dt_RowId"] = 0;
+    poxc[0]["analysis_poxc"] = {
+      sample_id: data['sample_id'],
+      analysis_date: data['analysis_date'],
+      weight_soil: data['weight_soil'],
+      color: data['color'],
+      color100: data['color100'],
+      conc_digest: data['conc_digest'],
+      cloudy: data['cloudy'],
+      colorimeter: data['colorimeter'],
+      raw_conc: data['raw_conc'],
+      poxc_sample: data['poxc_sample'],
+      posx_soil: data['posx_soil'],
+      correct_moisture: data['correct_moisture'],
+      moisture: soil_moisture,
+      poxc_soil_corrected: data['poxc_soil_corrected']
+    }
+
+    jQuery.ajax({
+      url: vars.ajax_url,
+      dataType: "json",
+      method:"POST",
+      data:{
+        action:"dt_analysis_poxc",
+        secure:vars.nonce,
+        dt_action:"create",
+        data: poxc
+      }
+    })
+    .done(function(response){
+      console.log("response from inserting poxc to db: ",response);
+    })
+
+  }
 }
