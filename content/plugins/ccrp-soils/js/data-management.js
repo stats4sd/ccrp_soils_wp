@@ -3,24 +3,22 @@ var projectFormsTable = [];
 var questions;
 var choices;
 jQuery(document).ready(function($){
-  console.log("stats4sd-js kobo Starting again");
 
   console.log("current user", vars.user_group_ids);
 
+  // Setup main forms table(s);
   setup_project_forms_table();
 
 
-// PreGet Data for form prep:
+  // Get questions and choices to speed up form creation
   questionGet = getData(vars,"dt_xls_form_questions")
   .done(function(response){
-  //  console.log("questions back = ",response.data);
-
-    questionSet = response.data.map(function(item,index){
+    //reformat response data to just get the question objects;
+    questions = response.data.map(function(item,index){
       return item.xls_form_questions;
     })
-
-    questions = questionSet;
   })
+  // in case of failure;
   .fail(function(){
     questions = 'error';
     console.log("could not get xls form questions");
@@ -28,23 +26,21 @@ jQuery(document).ready(function($){
 
   choicesGet = getData(vars,"dt_xls_form_choices")
   .done(function(response){
-    choicesSet = response.data.map(function(item,index){
+    choices = response.data.map(function(item,index){
       return item.xls_form_choices;
     })
-
-    choices = choicesSet;
   })
   .fail(function(){
     questions = 'error';
     console.log("could not get xls form choices");
   })
 
-
 }); //end doc ready;
 
 
 function deploy_form(table_id,id){
   var form = {};
+
   //get row data;
   var data = projectFormsTable[table_id].rows(id).data().toArray();
   var recordId = data[0].project_forms_info.id;
@@ -52,130 +48,110 @@ function deploy_form(table_id,id){
   console.log(data)
 
   //take form_id and get build form:...
-  form.survey = prepare_survey(data[0].project_forms_info.form_id);
+  form.survey = prepare_survey(form_type_id);
   form.choices = prepare_choices(form.survey);
   form.settings = prepare_settings(data[0]);
+
   console.log(form);
 
+  // Add form name (for XLS form builder in Node app)
   form.name = form.settings.form_title
-  // console.log("vars = ",vars);
+
   //send the form off to node:
-    jQuery.ajax({
-      url: vars.node_url + "/customDeployForm",
-      method: "POST",
-      dataType: "json",
-      contentType: "application/json; charset=utf-8",
-      data: JSON.stringify(form),
-      success: function(response){
-        console.log("success",response);
+  //// Node app will then create the XLS form from the form JSON object, and publish it to the soils_ccrp Kobotoolbox account.
+  jQuery.ajax({
+    url: vars.node_url + "/customDeployForm",
+    method: "POST",
+    dataType: "json",
+    contentType: "application/json; charset=utf-8",
+    data: JSON.stringify(form)
+  })
+  .done(function(response){
+    console.log("success",response);
 
-        if(response.msg.url){
-          //setButtons();
+    //checking if the response has an API url to to the form on Kobo works as another check of success.
+    if(response.msg.url){
+      
+      form.kobo_id = response.msg.formid;
 
-
-          form.kobo_id = response.msg.formid;
-
-          console.log("form kobo ID = ",form.kobo_id);
-
-          //save kobo_id to the projects_forms tabls for later reference;
-          jQuery.ajax({
-            url: vars.ajax_url,
-            method: "POST",
-            data: {
-              kobo_id: form.kobo_id,
-              id: recordId,
-              action: "kobo_form_save_id",
-              secure: vars.nonce
-            }
-          })
-          .done(function(response){
-            console.log("response from kobo_id db update:",response);
-                      //reload table data;
-          projectFormsTable[table_id].ajax.reload();
-          })
-          .fail(function(response){
-            console.log("fail from kobo_id db update",response);
-                      //reload table data;
-          projectFormsTable[table_id].ajax.reload();
-          })
-            
-
-
-
-
-
-
-          // if(form_type_id == 1){
-          //   update_locations(id,form.kobo_id);
-          // }
-         
-
-
-          //take project_kobo_account, then add sharing permissions via Kobo API.
-          kobotools_account = data[0].project_forms_info.project_kobotools_account;
-          console.log('kobotools sharing account = ',kobotools_account)
-          shareBody = {};
-          shareBody.form_id = form.kobo_id;
-          shareBody.username = kobotools_account;
-          shareBody.role = "manager";
-
-
-
-          console.log("share body",shareBody);
-
-          jQuery.ajax({
-            url: vars.node_url + "/shareForm",
-            method: "POST",
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(shareBody),
-            success: function(response){
-              console.log("response from sharing = ",response);
-            },
-            error: function(response){
-              console.log("error from sharing = ",response);
-            }
-          }) //end sharing requiest
-
-
+      //save kobo_id to the projects_forms tabls for later reference;
+      jQuery.ajax({
+        url: vars.ajax_url,
+        method: "POST",
+        data: {
+          kobo_id: form.kobo_id,
+          id: recordId,
+          action: "kobo_form_save_id",
+          secure: vars.nonce
         }
-        else {
-          
-          text = "ODK error: " + response.msg.text;
-          console.log("error, ", response.msg.text)
-          // user_alert(text,"danger");
+      })
+      .done(function(response){
+        console.log("response from kobo_id db update:",response);
+        
+        //reload table data;
+        projectFormsTable[table_id].ajax.reload();
+      })
+      .fail(function(response){
+        console.log("fail from kobo_id db update",response);
+        //reload table data;
+        projectFormsTable[table_id].ajax.reload();
+      })
+        
+      //take project_kobo_account, then add sharing permissions via Kobo API.
+      kobotools_account = data[0].project_forms_info.project_kobotools_account;
 
+      //prepare json object for sharing API call
+      shareBody = {};
+      shareBody.form_id = form.kobo_id;
+      shareBody.username = kobotools_account;
+      shareBody.role = "manager";
 
+      // Call Node App to share form
+      jQuery.ajax({
+        url: vars.node_url + "/shareForm",
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(shareBody),
+        success: function(response){
+          console.log("response from sharing = ",response);
+        },
+        error: function(response){
+          console.log("error from sharing = ",response);
         }
-      },
-      error: function(response){
-        console.log("error",response);
-        // working();
-        // user_alert("error - the form could not be deployed to Kobotools.","danger","alert-space");
-        // setButtons();
-        //user_alert("Server error message: " + response.error(),"danger");
-      }
-   })
+      }) //end sharing requiest
+
+
+    }
+    else {
+      
+      // display ODK error in console.
+      text = "ODK error: " + response.msg.text;
+      console.log("error, ", response.msg.text)
+
+    }
+  })
+  .fail(function(response){
+    console.log("error",response);
+  })
 
 }
 
 
 //returns json object for the survey sheet.
-function prepare_survey(form_id) {
- //console.log("form_id", form_id);
+function prepare_survey(form_type_id) {
+
   var survey = [];
   survey = questions.filter(function(item,index){
-    //console.log("item",item);
-    if(item.form_id == form_id){
+    
+    // return every question for the required form type.
+    if(item.form_id == form_type_id){
       return true;
     }
     return false;
   })
 
-
   return survey;
-
-
 }
 
 //function takes list of questions and prepares the choices sheet to include all required choice lists;
@@ -189,10 +165,10 @@ function prepare_choices(questions) {
 
   //go through every question in survey:
   questions.forEach(function(question,index){
-    console.log("question");
+
     // match select questions, and track the second term (choices reference)
     if(question.type.indexOf("select") > -1) {
-      console.log("is select !");
+
       //split select by the space to get just the choices list name:
       var meta = question.type.split(" ")
 
@@ -201,9 +177,6 @@ function prepare_choices(questions) {
     }
   })
 
-  console.log("choicesTracker",choicesTracker)
-
-  console.log("choices inside prepare_choices function",choices);
   //go through all the choices, and if their list_name matches one of the choicesTracker items, add it to selectedChoices.
     var selectedChoices = jQuery.map(choices,function(item,index){
     if(choicesTracker.some(i => i == item.list_name)) {
@@ -214,17 +187,20 @@ function prepare_choices(questions) {
   return selectedChoices;
 }
 
-
+//returns json object for settings sheet
 function prepare_settings(data){
 
   settings = [data.xls_forms];
-  console.log(data.project_forms_info.project_name);
+
+  //get and format the project name ready to add to form id
   pName = data.project_forms_info.project_name.toLowerCase();
   pName = pName.replace(/\s/g,"-")
+  
+  //prepend project ID to form ID and title.
   settings[0].form_id = pName + "_" + settings[0].form_id;
   settings[0].form_title = pName + " - " + settings[0].form_title;
 
-  //testing only 
+  //Apply testing string to allow for multiples...
   settings[0].form_id += "_test_" + Math.floor((Math.random() * 100000) + 1).toString()
 
   return settings;

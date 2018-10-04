@@ -21,6 +21,7 @@ get_header(); ?>
 
       <?php } ?>
 
+      <h3 class="mb-4">Form and Data Management</h3>
       <p>This page is where you manage the forms that are shared with you through Kobotoolbox, and review and download data collected through those forms.</p>
 
       <?php if(count($groups[groups]) > 1) { ?>
