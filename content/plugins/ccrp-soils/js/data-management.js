@@ -13,6 +13,8 @@ jQuery(document).ready(function($){
   // Get questions and choices to speed up form creation
   questionGet = getData(vars,"dt_xls_form_questions")
   .done(function(response){
+
+    console.log("question response",response);
     //reformat response data to just get the question objects;
     questions = response.data.map(function(item,index){
       return item.xls_form_questions;
