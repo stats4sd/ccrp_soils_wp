@@ -5,6 +5,14 @@
  * @package sparkling-child
  */
 
+GLOBAL $wpdb;
+
+$test = $wpdb->get_results(
+"SELECT * FROM xls_form_questions");
+
+echo "<pre>" . var_export($test,true) . "</pre>";
+echo "<br/>######################<br/>";
+
 
 get_header(); ?>
 

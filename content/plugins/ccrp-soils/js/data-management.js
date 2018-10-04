@@ -15,6 +15,11 @@ jQuery(document).ready(function($){
   .done(function(response){
 
     console.log("question response",response);
+    if(!response) {
+      user_alert("warning; cannot retrieve questions for XLS forms. The form creation will likely not work.","warning");
+    }
+    return;
+  }
     //reformat response data to just get the question objects;
     questions = response.data.map(function(item,index){
       return item.xls_form_questions;
