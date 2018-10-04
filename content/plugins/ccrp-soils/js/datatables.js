@@ -633,7 +633,10 @@ function user_alert(text,type,target){
   alert += "<span aria-hidden='true'>&times;</span>";
   alert += "</button></div>";
 
-  jQuery('#alert-space').append(alert);
+  if(!target){
+    target = "alert-space";
+  }
+  jQuery('#'+target).append(alert);
 
 }
 

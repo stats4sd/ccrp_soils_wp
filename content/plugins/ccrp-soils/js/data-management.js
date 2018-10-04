@@ -39,13 +39,19 @@ jQuery(document).ready(function($){
 
 
 function deploy_form(table_id,id){
+  working("deploying form to kobotoolbox account");
+
   var form = {};
 
   //get row data;
   var data = projectFormsTable[table_id].rows(id).data().toArray();
   var recordId = data[0].project_forms_info.id;
   var form_type_id = data[0].project_forms_info.form_id;
+  
+
   console.log(data)
+
+  working("generating XLS Form");
 
   //take form_id and get build form:...
   form.survey = prepare_survey(form_type_id);
@@ -54,6 +60,7 @@ function deploy_form(table_id,id){
 
   console.log(form);
 
+  working("Sending form data to Kobotoolbox");
   // Add form name (for XLS form builder in Node app)
   form.name = form.settings.form_title
 
@@ -72,6 +79,7 @@ function deploy_form(table_id,id){
     //checking if the response has an API url to to the form on Kobo works as another check of success.
     if(response.msg.url){
       
+      user_alert("form successfully added to Kobotoolbox","info");
       form.kobo_id = response.msg.formid;
 
       //save kobo_id to the projects_forms tabls for later reference;
@@ -88,6 +96,7 @@ function deploy_form(table_id,id){
       .done(function(response){
         console.log("response from kobo_id db update:",response);
         
+
         //reload table data;
         projectFormsTable[table_id].ajax.reload();
       })
@@ -96,9 +105,11 @@ function deploy_form(table_id,id){
         //reload table data;
         projectFormsTable[table_id].ajax.reload();
       })
-        
+      
       //take project_kobo_account, then add sharing permissions via Kobo API.
       kobotools_account = data[0].project_forms_info.project_kobotools_account;
+
+      working("sharing with project account (" + kobotools_account + ")")
 
       //prepare json object for sharing API call
       shareBody = {};
@@ -114,9 +125,13 @@ function deploy_form(table_id,id){
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(shareBody),
         success: function(response){
+          working("sharing success");
+          user_alert("The new form has been shared with your project's Kobotoolbox account ("+kobotools_account+"). You can now access the form via Kobotoolbox / ODK-Collect.","success");
           console.log("response from sharing = ",response);
         },
         error: function(response){
+          working("sharing error");
+          user_alert("The new form was created and added to Kobotoolbox, but could not be shared with your project's Kobotoolbox account ("+kobotools_account+"). Please check that you have entered the correct kobotools username in your project settings.")
           console.log("error from sharing = ",response);
         }
       }) //end sharing requiest
@@ -128,13 +143,15 @@ function deploy_form(table_id,id){
       // display ODK error in console.
       text = "ODK error: " + response.msg.text;
       console.log("error, ", response.msg.text)
-
+      user_alert("The new form could not be created. Please share the following ODK error message with support@stats4sd.org: " + text,"danger");
+      working();
     }
   })
   .fail(function(response){
+    user_alert("The Kobotoolbox API could not be contacted. Please check your connection settings and try again. If this issue persists, please contact support@stats4sd.org","danger");
+    working();
     console.log("error",response);
   })
-
 }
 
 
@@ -206,10 +223,10 @@ function prepare_settings(data){
   return settings;
 }
 
-function downloaddata(project){
-  console.log(project)
+function downloaddata(project_id){
+  console.log(project_id)
 
-  vars.project_id = project;
+  vars.project_id = project_id;
   soilData = getData(vars,'dt_soils')
   .done(function(response){
     response = response.body;
@@ -219,11 +236,10 @@ function downloaddata(project){
 
 
 function setup_project_forms_table() {
-    //Setup datatables columns:
-
 
   project_list = vars.user_groups;
 
+  // prepare a table for each project.
   project_list.forEach(function(project){
 
     var projectFormsColumns = [
@@ -235,52 +251,64 @@ function setup_project_forms_table() {
       {data: "project_forms_info.form_id", title: "Form ID", visible: false},
       {data: "xls_forms.form_title", title: "Form Name", visible: true, width:"40%"},
       {data: "project_forms_info.form_kobo_id", title: "Kobotools Form ID", visible: true, width:"20%"},
-      {data: "project_forms_info.count_records", title: "Number of Collected Records", visible: true, witdh:"5%"},
-      {data: "project_forms_info.project_kobotools_account", title: "Status",visible:true, render: function(data,type,row,meta){
+      {data: "project_forms_info.count_records", title: "Number of Collected Records", visible: true, witdh:"10%"},
+      {data: "project_forms_info.form_kobo_id", title: "Status",visible:true, render: function(data,type,row,meta){
         console.log("row = ",row);
 
-        //if no kobotools account is defined, direct user to add one:
-        if(data == "" || data == null){
-          
+        if(data === null || data === ""){
+          return "not depoyed"
         }
 
         //if form is deployed, suggest updating locations csv file
-        if(row.project_forms_info.form_kobo_id != null && row.project_forms_info.form_kobo_id != ""){
-
-          // //only offer locations update for intake form:
-          // if(row.project_forms_info.form_id == 1){
-          //   return "<button class='btn btn-link' onclick='update_locations("+meta.row+")'>update locations csv</button'"
-          // }
-          return "form deployed"
+        if(data != null && data != ""){
+          return "deployed"
         }
 
-        return "<button class='btn btn-link' onclick='deploy_form("+project.id+","+meta.row+")'>deploy</button>";
       }},
+      {data: "project_forms_info.form_kobo_id", title: "Action", visible: true, width: "10%", render: function(data,type,row,meta){
+
+        //if not deployed, render 'deploy' button;
+        if(data === null || data === ""){
+          return "<button class='btn btn-link' onclick='deploy_form("+project.id+","+meta.row+")'>deploy</button>";
+        }
+        //else, render 'delete' button'
+        else{
+          return "<button class='btn btn-link' onclick='delete_form("+project.id+","+meta.row+")'>delete form</button>";
+        }
+      }}
     ];
 
-    console.log("project",project);
+    
+    var project_id = project.id;
 
-    vars.project_id = project.id;
-    project_id = project.id
-    //datatables parameters
+    //add project ID to vars (that gets sent to AJAX call)
+    vars.project_id = project_id;
+
     projectFormsParams = {
       vars: vars,
       action: "dt_project_forms",
       target: "forms_table_" + project.id,
       columns: projectFormsColumns,
       options: {
-        dom: "tpB",
+        dom: "tp",
         select: false,
         pageLength: 150,
         buttons: [
         {
-            text: "Pull new records from Kobotoolbox",
+            text: "Sync data from Kobotoolbox",
             action: function(e,dt,node,config){
               update_counts(dt);
             }
           },
+          {
+            text: "Download Data",
+            action: function(e,dt,node,config){
+              downloaddata(project_id)
+            }
+          }
         ],
-      }
+      },
+      buttons_target: "buttons_for_forms_table" + project_id
       }
 
     //call datatables function
@@ -293,13 +321,21 @@ function setup_project_forms_table() {
 
 }
 
+function delete_form(project_id,row){
+  //get kobo_form_id for delete request
+  
+  console.log("row",row);
+}
+
 /*************** COPIED FROM NRC *********************/
 
 ////// Functions to update form record counts and pull new records from KOBO into the MySQL database:
 ///
 function update_counts(dt){
-  //get list of forms for current view
-  console.log("checking Kobotoolbox for new submissions");
+
+  //present working() ui
+  working("connecting to Kobotoolbox");
+
   console.log(dt.column(0).data());
 
   forms = dt.data().toArray();
@@ -327,12 +363,16 @@ function update_counts(dt){
 
     if(formId != null) {
 
+      working("getting records for " + form.project_forms_info.form_name);
+
       request = requestFormCount(formId);
       requests.push(request);
 
       request.done(function(response){
         
         if(response.statusCode != 200) {
+          user_alert("Unable to retriece data from Kobotoolbox. Please check that Kobotoolbox is currently available. If this error persists, please contact support@stats4sd.org.","danger");
+
           throw("warning - unable to reach Kobotoolbox site to retrieve new data. Please check that the Kobotoolbox site is currently accessible through the browser");
         }
         formCountResponse(dt,response,form)
@@ -344,8 +384,8 @@ function update_counts(dt){
 
 
   jQuery.when.apply(jQuery,requests).then(function(responses){
-    console.log();
-    user_alert("All forms in current view checked and syncronised","info","alert-space");
+    working();
+    user_alert("All deployed forms checked","info","alert-space");
   })
 }
 
@@ -373,17 +413,23 @@ function formCountResponse(dt,response,form,existing_ids){
   //check count against count:
   if(db_count == response.count){
     console.log("kobo_form with id" + response.kobo_id + " has same number of records as database")
+    working("no new records");
     return;
   }
 
   if(db_count > response.count){
+    working("no new records");
     console.log("kobo_form with id" + response.kobo_id + "has fewer records than database")
     return;
   }
 
   if(db_count < response.count){
-    console.log("kobo_form with id" + response.kobo_id + " has more records - starting to pull them");
-    console.log("getting data but not existing Ids = ",form.project_forms_info.id_list);
+
+    var numNew = response.count - db_count;
+
+    working(numNew + " new records found - adding them to the platform");
+
+
     existing_ids = form.project_forms_info.id_list;
     if(existing_ids){
       existing_ids = existing_ids.split(",");
@@ -401,10 +447,11 @@ function formCountResponse(dt,response,form,existing_ids){
     })
 
     pullRequest.done(function(response){
-      console.log("data pulled");
+      numNew = response
+
       //add pulled data to collected_data table:
       response = response.body;
-      console.log("response, ",response);
+
 
       savedata = {};
       response.forEach(function(row,index){
@@ -428,9 +475,6 @@ function formCountResponse(dt,response,form,existing_ids){
         }
       })
 
-      console.log("would save",savedata);
-      //forms_table.ajax.reload().draw()
-
       jQuery.ajax({
         url: vars.ajax_url,
         dataType: "json",
@@ -443,14 +487,17 @@ function formCountResponse(dt,response,form,existing_ids){
         }
       })
       .done(function(response){
+
+        working("success!");
         console.log("response from db: ",response);
-        // soils_table.ajax.reload();
+        
         dt.ajax.reload();
       })
 
     })
     console.log();
     user_alert("New records successfully pulled from Kobo","success","alert-space");
+    working();
     return;
   }
 }

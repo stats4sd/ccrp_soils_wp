@@ -27,3 +27,10 @@
   padding-right: 0 !important;
 }
 
+.table-card .container-fluid table {
+  table-layout: auto !important;
+}
+
+.card-footer.table-footer {
+  padding: 0;
+}
