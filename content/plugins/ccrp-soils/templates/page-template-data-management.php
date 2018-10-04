@@ -87,7 +87,7 @@ get_header(); ?>
               
               <h3 class="mb-4">Project: <?php echo $group_details->name; ?> </h3>
               <p>Kobotoolbox user account: <span class="font-weight-bold"><?php echo $koboaccount; ?></span></p>
-              
+              <p class="font-italic"><a href="https://kc.kobotoolbox.org/">Go to Kobotools</a></p>
               <?php  if($koboaccount != "none"){ ?>
 
 

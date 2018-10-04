@@ -17,6 +17,7 @@ jQuery(document).ready(function($){
     questions = response.data.map(function(item,index){
       return item.xls_form_questions;
     })
+    console.log("questions GOT",questions);
   })
   // in case of failure;
   .fail(function(){
@@ -29,6 +30,8 @@ jQuery(document).ready(function($){
     choices = response.data.map(function(item,index){
       return item.xls_form_choices;
     })
+
+    console.log("choices GOT",choices);
   })
   .fail(function(){
     questions = 'error';
@@ -128,11 +131,13 @@ function deploy_form(table_id,id){
           working("sharing success");
           user_alert("The new form has been shared with your project's Kobotoolbox account ("+kobotools_account+"). You can now access the form via Kobotoolbox / ODK-Collect.","success");
           console.log("response from sharing = ",response);
+          working();
         },
         error: function(response){
           working("sharing error");
           user_alert("The new form was created and added to Kobotoolbox, but could not be shared with your project's Kobotoolbox account ("+kobotools_account+"). Please check that you have entered the correct kobotools username in your project settings.")
           console.log("error from sharing = ",response);
+          working();
         }
       }) //end sharing requiest
 
@@ -229,7 +234,6 @@ function downloaddata(project_id){
   vars.project_id = project_id;
   soilData = getData(vars,'dt_soils')
   .done(function(response){
-    response = response.body;
     console.log(response);
   })
 }
@@ -269,11 +273,11 @@ function setup_project_forms_table() {
 
         //if not deployed, render 'deploy' button;
         if(data === null || data === ""){
-          return "<button class='btn btn-link' onclick='deploy_form("+project.id+","+meta.row+")'>deploy</button>";
+          return "<button class='btn btn-link submit_button' onclick='deploy_form("+project.id+","+meta.row+")'>deploy</button>";
         }
         //else, render 'delete' button'
         else{
-          return "<button class='btn btn-link' onclick='delete_form("+project.id+","+meta.row+")'>delete form</button>";
+          return "<button class='btn btn-link submit_button' onclick='delete_form("+project.id+","+meta.row+")'>delete form</button>";
         }
       }}
     ];
@@ -298,13 +302,15 @@ function setup_project_forms_table() {
             text: "Sync data from Kobotoolbox",
             action: function(e,dt,node,config){
               update_counts(dt);
-            }
+            },
+            className:"submit_button"
           },
           {
             text: "Download Data",
             action: function(e,dt,node,config){
               downloaddata(project_id)
-            }
+            },
+            className:"submit_button"
           }
         ],
       },
@@ -321,10 +327,72 @@ function setup_project_forms_table() {
 
 }
 
-function delete_form(project_id,row){
+function delete_form(project_id,row_id){
   //get kobo_form_id for delete request
   
-  console.log("row",row);
+  var rowData =  projectFormsTable[project_id].row(row_id).data();
+
+  console.log(rowData);
+
+  var koboFormId = rowData.project_forms_info.form_kobo_id;
+  var formId = rowData.project_forms_info.form_id;
+  var dtId = rowData.DT_RowId;
+
+  if(confirm("Are you sure you want to delete the "+rowData.xls_forms.form_title+ " form from your Kobotoolbox account? This will permanently delete the form from Kobotoolbox. We will fetch any new data into this platform before deleltion to avoid data loss.")){
+    var delRequest = jQuery.ajax({
+      url: vars.node_url + "/customDeleteForm",
+      method: "DELETE",
+      dataType: "json",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        kobo_id: koboFormId
+      })
+    })
+    .done(function(response){
+
+      //remove koboform id from database;
+      projectFormId = rowData.project_forms_info.id;
+
+      var dataUpdate = {}
+
+      dataUpdate[dtId] = {
+        DT_RowId: dtId,
+        projects_xls_forms: {
+          id: rowData.project_forms_info.id,
+          project_id: rowData.project_forms_info.project_id,
+          form_id: rowData.project_forms_info.form_id,
+          form_kobo_id: null,
+          deployed: rowData.project_forms_info.deployed,
+          records: rowData.project_forms_info.records
+        }
+      };
+      
+      var delUpdate = jQuery.ajax({
+        url: vars.ajax_url,
+        method: "POST",
+        dataType: "json",
+        data:{
+          action:"dt_project_forms_updater",
+          secure:vars.nonce,
+          dt_action:"edit",
+          data: dataUpdate
+        }
+      })
+      .done(function(response){
+        projectFormsTable[project_id].ajax.reload();
+        user_alert("kobotoolbox formID removed from platform database","info");
+      })
+      user_alert("Form with id " + formId + " has been deleted from Kobotoolbox. To continue using that form type, please deploy it again.","success");
+    })
+  }
+  else{
+    //cancel request and return states;
+    user_alert('delete request cancelled','info');
+    working();
+  }
+
+  
+
 }
 
 /*************** COPIED FROM NRC *********************/
@@ -362,8 +430,7 @@ function update_counts(dt){
 
 
     if(formId != null) {
-
-      working("getting records for " + form.project_forms_info.form_name);
+      working("getting records for " + form.xls_forms.form_title);
 
       request = requestFormCount(formId);
       requests.push(request);
@@ -456,7 +523,7 @@ function formCountResponse(dt,response,form,existing_ids){
       savedata = {};
       response.forEach(function(row,index){
         
-
+        console.log(index);
         //insert functions from original node JS to parse into main tables:
         parse_data_into_tables(row,form);
 
@@ -473,6 +540,7 @@ function formCountResponse(dt,response,form,existing_ids){
           record_data: record,
           uuid: row._uuid
         }
+
       })
 
       jQuery.ajax({
@@ -490,14 +558,13 @@ function formCountResponse(dt,response,form,existing_ids){
 
         working("success!");
         console.log("response from db: ",response);
-        
+        user_alert("New records successfully pulled for " + form.xls_forms.form_title,"success","alert-space");
+
         dt.ajax.reload();
       })
 
     })
     console.log();
-    user_alert("New records successfully pulled from Kobo","success","alert-space");
-    working();
     return;
   }
 }
@@ -519,40 +586,43 @@ function parse_data_into_tables(data,form){
     // *****************************************************
     var sampleValues = {};
 
+    console.log("sample data = ",data)
+    
 
-    //for each sample within this plot...
-    for (var y = 0; y < data['sample_info'].length; y++) {
-      //wrap inside self-serving function to avoid async issues with x and ys ...
-      console.log("sample ID = ",data['sample_info'][y]['sample_info/sample_id']);
-      console.log("farmer ID = ",data['farm_id']);
+    sampleValues[0] = {};
+    sampleValues[0]["Dt_RowId"] = 0;
 
-      sampleDate = data['sample_info'][y]['sample_info/sampling_date'];
-      console.log("sampleDate = ",sampleDate);
-      console.log(typeof sampleDate);
-      dateLength = sampleDate.length;
-      if(dateLength > 9){
-        saempleDate = sampleDate.substring(0,10);
+
+    //make date just the date;
+    var sampleDate = data.date.substring(0,10);
+
+    sampleValues[0]["samples"] = {};
+      sampleValues[0]["samples"].id = data['sample_id']
+      sampleValues[0]["samples"].username = data.username
+      sampleValues[0]["samples"].plot_id = data.plot_id
+      sampleValues[0]["samples"].date = sampleDate || new Date()
+      sampleValues[0]["samples"].depth = data.depth
+      sampleValues[0]["samples"].texture = data.texture || ""
+      sampleValues[0]["samples"].at_plot = data.at_plot || "0"
+      sampleValues[0]["samples"].plot_photo = data.photo || "";
+
+      //parse GPS:
+      if(data.gps){
+        var gpsArray = data.gps.split(" ");
+            console.log("gps array",gpsArray);
+            sampleValues[0]["samples"].longitude = gpsArray[0] || null
+            sampleValues[0]["samples"].latitude = gpsArray[1] || null
+            sampleValues[0]["samples"].altitude = gpsArray[2] || null
+            sampleValues[0]["samples"].accuracy = gpsArray[3] || null
       }
 
-        (function(y) {
-          sampleValues[y] = {};
-          sampleValues[y]["Dt_RowId"] = y;
-          sampleValues[y]["samples"] = {
-            id: data['sample_info'][y]['sample_info/sample_id'],
-            farmer_id: data['farm_id'],
-            //plot_name: data['plot_name'],
-            //plot_gradient: data['plot_gradient'],
-            //farmer_kn_soil: data['farmer_knowledge_soil_type'],
-            soil_texture: data['sample_info'][y]['sample_info/soil_texture'],
-            sampling_date: sampleDate,
-            sampling_depth: data['sample_info'][y]['sample_info/sampling_depth'],
-            sample_comments: data['sample_info'][y]['sample_info/sample_comments'],
-            collector_name: data['_submitted_by'],
-            project_id: projectId
-          }
-       })(y); //end function(y);
-    } //end for loop to go around the samples
 
+      sampleValues[0]["samples"].comment = data.comment;
+      sampleValues[0]["samples"].farmer_quick = data.farmer || ""
+      sampleValues[0]["samples"].project_id = projectId;
+      sampleValues[0]["samples"].comnunity_quick = data.na_community || ""
+  
+      console.log("sample values to enter", sampleValues)
     //insert Sample values into Db via editor ajax function:
     jQuery.ajax({
       url: vars.ajax_url,
@@ -566,6 +636,7 @@ function parse_data_into_tables(data,form){
       }
     })
     .done(function(response){
+      user_alert("new samples from intake form added to database","info");
       console.log("response from inserting samples to db: ",response);
     })
 

@@ -35,17 +35,22 @@ function dt_samples() {
   // Build our Editor instance and process the data coming from _POST
   $editor = Editor::inst( $db, 'samples' )
     ->fields(
-      Field::inst('samples.id')->validator('Validate::notEmpty'),
-      FIeld::inst('samples.sampling_date'),
-      Field::inst('samples.sampling_depth'),
-      Field::inst('samples.sample_comments'),
-      Field::inst('samples.farmer_id'),
-      Field::inst('samples.collector_name'),
-      Field::inst('samples.latitude'),
-      Field::inst('samples.longitude'),
-      Field::inst('samples.altitude'),
-      Field::inst('samples.accuracy'),
-      Field::inst('samples.project_id')
+      Field::inst( 'samples.id' )->validator('Validate::notEmpty'),
+      Field::inst( 'samples.date' ),
+      Field::inst( 'samples.depth' ),
+      Field::inst( 'samples.texture' ),
+      Field::inst( 'samples.at_plot' ),
+      Field::inst( 'samples.plot_photo' ),
+      Field::inst( 'samples.longitude' ),
+      Field::inst( 'samples.latitude' ),
+      Field::inst( 'samples.altitude' ),
+      Field::inst( 'samples.accuracy' ),
+      Field::inst( 'samples.comment' ),
+      Field::inst( 'samples.plot_id' ),
+      Field::inst( 'samples.farmer_quick' ),
+      Field::inst( 'samples.community_quick' ),
+      Field::inst( 'samples.project_id' )
+
     );
 
 

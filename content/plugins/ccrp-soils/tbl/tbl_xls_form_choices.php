@@ -38,7 +38,8 @@ function dt_xls_form_choices() {
       Field::inst('xls_form_choices.id')->validator('Validate::notEmpty'),
       Field::inst('xls_form_choices.list_name')->validator('Validate::notEmpty'),
       Field::inst('xls_form_choices.name')->validator('Validate::notEmpty'),
-      Field::inst('xls_form_choices.label')
+      Field::inst('xls_form_choices.label::english'),
+      Field::inst('xls_form_choices.label::spanish')
     );
 
 

@@ -38,18 +38,17 @@ function dt_analysis_poxc() {
       FIeld::inst('analysis_poxc.analysis_date'),
       Field::inst('analysis_poxc.sample_id'),
       Field::inst('analysis_poxc.weight_soil'),
-      Field::inst('analysis_poxc.colorimeter'),
-      Field::inst('analysis_poxc.colorimeter_100'),
+      Field::inst('analysis_poxc.color'),
+      Field::inst('analysis_poxc.color100'),
       Field::inst('analysis_poxc.conc_digest'),
-      Field::inst('analysis_poxc.comment_cloudy'),
-      Field::inst('analysis_poxc.colorimeter_calc'),
-      Field::inst('analysis_poxc.raw_conc_extract'),
-      Field::inst('analysis_poxc.poxc_insample'),
-      Field::inst('analysis_poxc.poxc_insoil'),
-      Field::inst('analysis_poxc.soil_moisture'),
-      Field::inst('analysis_poxc.poxc_corrected_moisture'),
-      Field::inst('analysis_poxc.photo'),
-      Field::inst('analysis_poxc.moisture_corrected')
+      Field::inst('analysis_poxc.cloudy'),
+      Field::inst('analysis_poxc.colorimeter'),
+      Field::inst('analysis_poxc.raw_conc'),
+      Field::inst('analysis_poxc.poxc_sample'),
+      Field::inst('analysis_poxc.poxc_soil'),
+      Field::inst('analysis_poxc.correct_moisture'),
+      Field::inst('analysis_poxc.moisture'),
+      Field::inst('analysis_poxc.poxc_soil_corrected')
 
     );
 

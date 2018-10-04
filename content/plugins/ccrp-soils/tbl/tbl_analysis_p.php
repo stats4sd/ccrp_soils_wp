@@ -37,16 +37,19 @@ function dt_analysis_p() {
   $editor = Editor::inst( $db, 'analysis_p' )
     ->fields(
       Field::inst('analysis_p.id')->validator('Validate::notEmpty'),
-      FIeld::inst('analysis_p.analysis_date'),
+      Field::inst('analysis_p.sample_id'),
+      Field::inst('analysis_p.analysis_date'),
       Field::inst('analysis_p.weight_soil'),
-      Field::inst('analysis_p.volume_filtered_extract'),
-      Field::inst('analysis_p.volume_topup'),
-      Field::inst('analysis_p.colorimeter'),
-      Field::inst('analysis_p.colorimeter_100'),
-      Field::inst('analysis_p.comment_cloudy_solution'),
-      Field::inst('analysis_p.raw_conc_extract'),
-      Field::inst('analysis_p.soil_conc_olsen'),
-      Field::inst('analysis_p.sample_id')
+      Field::inst('analysis_p.vol_extract'),
+      Field::inst('analysis_p.vol_topup'),
+      Field::inst('analysis_p.color'),
+      Field::inst('analysis_p.cloudy'),
+      Field::inst('analysis_p.raw_conc'),
+      Field::inst('analysis_p.olsen_p'),
+      Field::inst('analysis_p.blank_water'),
+      Field::inst('analysis_p.correct_moisture'),
+      Field::inst('analysis_p.moisture'),
+      Field::inst('analysis_p.olsen_p_corrected')
     );
 
 

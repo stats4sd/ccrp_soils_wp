@@ -46,16 +46,22 @@ function dt_soils() {
   //prepare fields from mysql table
   ->fields(
     Field::inst( 'samples.id' )->validator( 'Validate::notEmpty' ),
-    Field::inst( 'samples.sampling_date' ),
-    Field::inst( 'samples.collector_name' ),
-    Field::inst( 'samples.sampling_depth' ),
-    Field::inst( 'samples.sample_comments' ),
-    Field::inst( 'samples.project_id' )
+    Field::inst( 'samples.date' ),
+    Field::inst( 'samples.depth' ),
+    Field::inst( 'samples.texture' ),
+    Field::inst( 'samples.at_plot' ),
+    Field::inst( 'samples.plot_photo' ),
+    Field::inst( 'samples.plot_photo' ),
+    Field::inst( 'samples.plot_photo' ),
+    Field::inst( 'samples.plot_photo' ),
+    Field::inst( 'samples.plot_photo' ),
+    Field::inst( 'samples.plot_photo' ),
+    Field::inst( 'samples.plot_photo' ),
+    Field::inst( 'samples.plot_photo' ),
+    Field::inst(' samples.plot_id'),
+    Field::inst(' samples.plot_quick_id')
 
   )
-  // 1 - many joins
-  ->leftJoin('farmers','farmers.id', '=','samples.farmer_id')
-  ->leftJoin('communities','communities.id','=','farmers.community_id')
 
   //full joins to other tables;
   ->join(

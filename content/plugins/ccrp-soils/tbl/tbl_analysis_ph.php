@@ -38,9 +38,9 @@ function dt_analysis_ph() {
       Field::inst('analysis_ph.id')->validator('Validate::notEmpty'),
       FIeld::inst('analysis_ph.analysis_date'),
       Field::inst('analysis_ph.weight_soil'),
-      Field::inst('analysis_ph.volume_water'),
-      Field::inst('analysis_ph.ph'),
-      Field::inst('analysis_ph.comment_ph_stability'),
+      Field::inst('analysis_ph.vol_water'),
+      Field::inst('analysis_ph.reading_ph'),
+      Field::inst('analysis_ph.stability'),
       Field::inst('analysis_ph.sample_id')
     );
 
