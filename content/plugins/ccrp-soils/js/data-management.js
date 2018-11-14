@@ -237,6 +237,20 @@ function downloaddata(project_id){
   soilData = getData(vars,'dt_soils')
   .done(function(response){
     console.log(response);
+
+    data = response.data;
+
+    data = data.map(function(item,index){
+      thing = item.samples_merged;
+      return thing;
+    })
+
+    console.log("final data output",data);
+
+    var headers = Object.keys(data[0]);
+    var timeNow = new Date();
+    var fileName = "_soil_sample_data_download_"+ date_iso(timeNow,"datetime");
+    exportCSVFile(headers,data,fileName);
   })
 }
 
@@ -559,6 +573,7 @@ function formCountResponse(dt,response,form,existing_ids){
       .done(function(response){
 
         working("success!");
+        working();
         console.log("response from db: ",response);
         user_alert("New records successfully pulled for " + form.xls_forms.form_title,"success","alert-space");
 

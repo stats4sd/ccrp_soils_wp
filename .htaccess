@@ -1,4 +1,4 @@
-# This file was updated by Duplicator on 2018-10-02 07:44:17. See .htaccess.orig for the original .htaccess file.
+# This file was updated by Duplicator on 2018-10-02 18:12:15. See .htaccess.orig for the original .htaccess file.
 # Please note that other plugins and resources write to this file. If the time-stamp above is different
 # than the current time-stamp on the file system then another resource has updated this file.
 # Duplicator only writes to this file once during the install process while running the installer.php file.
@@ -6,10 +6,10 @@
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteBase /ccrp_soils_wp/wp/
+RewriteBase /wp/
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /ccrp_soils_wp/wp/index.php [L]
+RewriteRule . /wp/index.php [L]
 </IfModule>
 # END WordPress
