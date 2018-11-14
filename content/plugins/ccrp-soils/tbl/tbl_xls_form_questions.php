@@ -22,6 +22,8 @@ add_action('wp_ajax_dt_xls_form_questions','dt_xls_form_questions');
 
 function dt_xls_form_questions() {
 
+  echo "testing 1234";
+  
   //include DataTables php script
   include WP_PLUGIN_DIR . "/wordpress-datatables/DataTablesEditor/php/DataTables.php";
   check_ajax_referer('pa_nonce', 'secure');

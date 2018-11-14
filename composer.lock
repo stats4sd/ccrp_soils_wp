@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3aabc35ca4df903d3beb8c755146cccc",
+    "content-hash": "3e208234e690029f65663d00d02760fa",
     "packages": [
         {
             "name": "composer/installers",
@@ -132,7 +132,7 @@
             "source": {
                 "type": "git",
                 "url": "git@bitbucket.org:dave_in_stats/wordpress-datatables",
-                "reference": "a61c0939c3238014acb2e1d60b269075da6adb91"
+                "reference": "3904e040a5054642d74693682afd59113b77d3d1"
             },
             "require": {
                 "composer/installers": "*",
@@ -140,7 +140,7 @@
             },
             "type": "wordpress-plugin",
             "description": "WordPress plugin including datatables.net along with the yadcf (filters) additional plugin. Includes custom php script to integrate into WordPress's manner of handling plugins. NOTE - this includes the propriatory extra DataTables Editor - so this repo must not be shared!",
-            "time": "2018-09-19T13:44:06+00:00"
+            "time": "2018-10-26T14:11:18+00:00"
         },
         {
             "name": "johnpbloch/wordpress",
@@ -223,16 +223,16 @@
         },
         {
             "name": "johnpbloch/wordpress-core-installer",
-            "version": "1.0.0.2",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnpbloch/wordpress-core-installer.git",
-                "reference": "7941acd71725710a789daabe0557429da63e7ac6"
+                "reference": "fd12f5cfe27223b92b0f4bbc097059eb23cc56c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnpbloch/wordpress-core-installer/zipball/7941acd71725710a789daabe0557429da63e7ac6",
-                "reference": "7941acd71725710a789daabe0557429da63e7ac6",
+                "url": "https://api.github.com/repos/johnpbloch/wordpress-core-installer/zipball/fd12f5cfe27223b92b0f4bbc097059eb23cc56c4",
+                "reference": "fd12f5cfe27223b92b0f4bbc097059eb23cc56c4",
                 "shasum": ""
             },
             "require": {
@@ -256,7 +256,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-2.0+"
+                "GPL-2.0-or-later"
             ],
             "authors": [
                 {
@@ -268,7 +268,7 @@
             "keywords": [
                 "wordpress"
             ],
-            "time": "2018-01-29T14:49:29+00:00"
+            "time": "2018-11-09T20:10:38+00:00"
         },
         {
             "name": "vedmack/yadcf",
@@ -302,6 +302,26 @@
             "homepage": "https://wordpress.org/plugins/bp-member-type-generator/"
         },
         {
+            "name": "wpackagist-plugin/bp-registration-options",
+            "version": "4.3.5",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/bp-registration-options/",
+                "reference": "tags/4.3.5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/bp-registration-options.4.3.5.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/bp-registration-options/"
+        },
+        {
             "name": "wpackagist-plugin/buddypress",
             "version": "3.2.0",
             "source": {
@@ -323,7 +343,7 @@
         },
         {
             "name": "wpackagist-plugin/buddypress-members-only",
-            "version": "1.9.3",
+            "version": "1.9.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/buddypress-members-only/",
@@ -331,7 +351,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/buddypress-members-only.zip?timestamp=1525608506",
+                "url": "https://downloads.wordpress.org/plugin/buddypress-members-only.zip?timestamp=1541088763",
                 "reference": null,
                 "shasum": null
             },
@@ -343,15 +363,15 @@
         },
         {
             "name": "wpackagist-plugin/contact-form-7",
-            "version": "5.0.4",
+            "version": "5.0.5",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/contact-form-7/",
-                "reference": "tags/5.0.4"
+                "reference": "tags/5.0.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/contact-form-7.5.0.4.zip",
+                "url": "https://downloads.wordpress.org/plugin/contact-form-7.5.0.5.zip",
                 "reference": null,
                 "shasum": null
             },
@@ -363,15 +383,15 @@
         },
         {
             "name": "wpackagist-plugin/duplicator",
-            "version": "1.2.48",
+            "version": "1.2.52",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/duplicator/",
-                "reference": "tags/1.2.48"
+                "reference": "tags/1.2.52"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/duplicator.1.2.48.zip",
+                "url": "https://downloads.wordpress.org/plugin/duplicator.1.2.52.zip",
                 "reference": null,
                 "shasum": null
             },
@@ -420,6 +440,26 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/invite-anyone/"
+        },
+        {
+            "name": "wpackagist-plugin/polylang",
+            "version": "2.4",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/polylang/",
+                "reference": "tags/2.4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/polylang.2.4.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/polylang/"
         },
         {
             "name": "wpackagist-plugin/qr-code-tag",
