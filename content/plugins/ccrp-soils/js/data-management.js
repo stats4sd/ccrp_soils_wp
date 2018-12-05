@@ -58,7 +58,7 @@ function deploy_form(table_id,id){
   var data = projectFormsTable[table_id].rows(id).data().toArray();
   var recordId = data[0].project_forms_info.id;
   var form_type_id = data[0].project_forms_info.form_id;
-  
+
 
   console.log(data)
 
@@ -89,7 +89,7 @@ function deploy_form(table_id,id){
 
     //checking if the response has an API url to to the form on Kobo works as another check of success.
     if(response.msg.url){
-      
+
       user_alert("form successfully added to Kobotoolbox","info");
       form.kobo_id = response.msg.formid;
 
@@ -106,7 +106,7 @@ function deploy_form(table_id,id){
       })
       .done(function(response){
         console.log("response from kobo_id db update:",response);
-        
+
 
         //reload table data;
         projectFormsTable[table_id].ajax.reload();
@@ -116,7 +116,7 @@ function deploy_form(table_id,id){
         //reload table data;
         projectFormsTable[table_id].ajax.reload();
       })
-      
+
       //take project_kobo_account, then add sharing permissions via Kobo API.
       kobotools_account = data[0].project_forms_info.project_kobotools_account;
 
@@ -152,7 +152,7 @@ function deploy_form(table_id,id){
 
     }
     else {
-      
+
       // display ODK error in console.
       text = "ODK error: " + response.msg.text;
       console.log("error, ", response.msg.text)
@@ -173,7 +173,7 @@ function prepare_survey(form_type_id) {
 
   var survey = [];
   survey = questions.filter(function(item,index){
-    
+
     // return every question for the required form type.
     if(item.form_id == form_type_id){
       return true;
@@ -225,7 +225,7 @@ function prepare_settings(data){
   //get and format the project name ready to add to form id
   pName = data.project_forms_info.project_name.toLowerCase();
   pName = pName.replace(/\s/g,"-")
-  
+
   //prepend project ID to form ID and title.
   settings[0].form_id = pName + "_" + settings[0].form_id;
   settings[0].form_title = pName + " - " + settings[0].form_title;
@@ -290,7 +290,7 @@ function setup_project_forms_table() {
       }}
     ];
 
-    
+
     var project_id = project.id;
 
     //add project ID to vars (that gets sent to AJAX call)
@@ -337,7 +337,7 @@ function setup_project_forms_table() {
 
 function delete_form(project_id,row_id){
   //get kobo_form_id for delete request
-  
+
   var rowData =  projectFormsTable[project_id].row(row_id).data();
 
   console.log(rowData);
@@ -374,7 +374,7 @@ function delete_form(project_id,row_id){
           records: rowData.project_forms_info.records
         }
       };
-      
+
       var delUpdate = jQuery.ajax({
         url: vars.ajax_url,
         method: "POST",
@@ -399,7 +399,7 @@ function delete_form(project_id,row_id){
     working();
   }
 
-  
+
 
 }
 
@@ -444,7 +444,7 @@ function update_counts(dt){
       requests.push(request);
 
       request.done(function(response){
-        
+
         if(response.statusCode != 200) {
           user_alert("Unable to retriece data from Kobotoolbox. Please check that Kobotoolbox is currently available. If this error persists, please contact support@stats4sd.org.","danger");
 
@@ -530,14 +530,14 @@ function formCountResponse(dt,response,form,existing_ids){
 
       savedata = {};
       response.forEach(function(row,index){
-        
+
         console.log(index);
         //insert functions from original node JS to parse into main tables:
         parse_data_into_tables(row,form);
 
 
         record = JSON.stringify(row);
-        
+
         //remove / from keys:
         record = record.replace(/\//g,"_");
         //console.log("record:",record)
@@ -582,7 +582,7 @@ function parse_data_into_tables(data,form){
   console.log("form here is",form);
   formType = form.xls_forms.form_id;
   projectId = form.project_forms_info.project_id
-  
+
 
   //work out which form type it is...
   if(formType == "ccrp_soil_intake"){
@@ -595,7 +595,7 @@ function parse_data_into_tables(data,form){
     var sampleValues = {};
 
     console.log("sample data = ",data)
-    
+
 
     sampleValues[0] = {};
     sampleValues[0]["Dt_RowId"] = 0;
@@ -618,8 +618,8 @@ function parse_data_into_tables(data,form){
       if(data.gps){
         var gpsArray = data.gps.split(" ");
             console.log("gps array",gpsArray);
-            sampleValues[0]["samples"].longitude = gpsArray[0] || null
-            sampleValues[0]["samples"].latitude = gpsArray[1] || null
+            sampleValues[0]["samples"].latitude = gpsArray[0] || null
+            sampleValues[0]["samples"].longitude = gpsArray[1] || null
             sampleValues[0]["samples"].altitude = gpsArray[2] || null
             sampleValues[0]["samples"].accuracy = gpsArray[3] || null
       }
@@ -629,7 +629,7 @@ function parse_data_into_tables(data,form){
       sampleValues[0]["samples"].farmer_quick = data.farmer || ""
       sampleValues[0]["samples"].project_id = projectId;
       sampleValues[0]["samples"].comnunity_quick = data.na_community || ""
-  
+
       console.log("sample values to enter", sampleValues)
     //insert Sample values into Db via editor ajax function:
     jQuery.ajax({
@@ -650,7 +650,7 @@ function parse_data_into_tables(data,form){
 
 
 
-  } 
+  }
 
   if(formType == "ccrp_soil_p") {
     p = {};
