@@ -73,24 +73,6 @@ jQuery(document).ready(function($){
   // Setup main forms table(s);
   setup_project_forms_table();
 
-
-  // Get questions and choices to speed up form creation
-  questionGet = getData(vars,"dt_xls_form_questions")
-  .done(function(response){
-
-    console.log("question response",response);
-    //reformat response data to just get the question objects;
-    questions = response.data.map(function(item,index){
-      return item.xls_form_questions;
-    })
-    console.log("questions GOT",questions);
-  })
-  // in case of failure;
-  .fail(function(){
-    questions = 'error';
-    console.log("could not get xls form questions");
-  })
-
   choicesGet = getData(vars,"dt_xls_form_choices")
   .done(function(response){
     choices = response.data.map(function(item,index){
@@ -104,11 +86,35 @@ jQuery(document).ready(function($){
     console.log("could not get xls form choices");
   })
 
+  // Get questions and choices to speed up form creation
+  questionGet = getData(vars,"dt_xls_form_questions")
+  .done(function(response){
+
+    console.log("question response",response);
+    if(!response) {
+      user_alert("warning; cannot retrieve questions for XLS forms. The form creation will likely not work.","warning");
+      return ;
+    }
+
+    //reformat response data to just get the question objects;
+    questions = response.data.map(function(item,index){
+      return item.xls_form_questions;
+    })
+    console.log("questions GOT",questions);
+  })
+  // in case of failure;
+  .fail(function(){
+    questions = 'error';
+    console.log("could not get xls form questions");
+  })
+
+
+
 }); //end doc ready;
 
 
 function deploy_form(table_id,id){
-  working(getString(1));
+  working("deploying form to kobotoolbox account");
 
   var form = {};
 
@@ -120,7 +126,7 @@ function deploy_form(table_id,id){
 
   console.log(data)
 
-  working(getString(2));
+  working("generating XLS Form");
 
   //take form_id and get build form:...
   form.survey = prepare_survey(form_type_id);
@@ -129,7 +135,7 @@ function deploy_form(table_id,id){
 
   console.log(form);
 
-  working(getString(3));
+  working("Sending form data to Kobotoolbox");
   // Add form name (for XLS form builder in Node app)
   form.name = form.settings.form_title
 
@@ -148,7 +154,7 @@ function deploy_form(table_id,id){
     //checking if the response has an API url to to the form on Kobo works as another check of success.
     if(response.msg.url){
 
-      user_alert(getString(4),"info");
+      user_alert("form successfully added to Kobotoolbox","info");
       form.kobo_id = response.msg.formid;
 
       //save kobo_id to the projects_forms tabls for later reference;
@@ -178,7 +184,7 @@ function deploy_form(table_id,id){
       //take project_kobo_account, then add sharing permissions via Kobo API.
       kobotools_account = data[0].project_forms_info.project_kobotools_account;
 
-      working(getString(5) + " ( " + kobotools_account + " ) ")
+      working("sharing with project account (" + kobotools_account + ")")
 
       //prepare json object for sharing API call
       shareBody = {};
@@ -195,14 +201,13 @@ function deploy_form(table_id,id){
         data: JSON.stringify(shareBody),
         success: function(response){
           working("sharing success");
-          user_alert(getString(6) +  " ( "+kobotools_account+" )" + getString(7) ,"success");
+          user_alert("The new form has been shared with your project's Kobotoolbox account ("+kobotools_account+"). You can now access the form via Kobotoolbox / ODK-Collect.","success");
           console.log("response from sharing = ",response);
           working();
         },
-        // #######################################################################################################################################
         error: function(response){
           working("sharing error");
-          user_alert(getString(8) + " ( "+kobotools_account+" ) " + getString(9))
+          user_alert("The new form was created and added to Kobotoolbox, but could not be shared with your project's Kobotoolbox account ("+kobotools_account+"). Please check that you have entered the correct kobotools username in your project settings.")
           console.log("error from sharing = ",response);
           working();
         }
@@ -215,12 +220,12 @@ function deploy_form(table_id,id){
       // display ODK error in console.
       text = "ODK error: " + response.msg.text;
       console.log("error, ", response.msg.text)
-      user_alert(getString(10) + text,"danger");
+      user_alert("The new form could not be created. Please share the following ODK error message with support@stats4sd.org: " + text,"danger");
       working();
     }
   })
   .fail(function(response){
-    user_alert(getString(11),"danger");
+    user_alert("The Kobotoolbox API could not be contacted. Please check your connection settings and try again. If this issue persists, please contact support@stats4sd.org","danger");
     working();
     console.log("error",response);
   })
@@ -302,27 +307,6 @@ function downloaddata(project_id){
   soilData = getData(vars,'dt_soils')
   .done(function(response){
     console.log(response);
-
-    data = response.data;
-
-    data = data.map(function(item,index){
-      thing = item.samples_merged;
-      return thing;
-    })
-
-    if(data.length > 0 ){
-
-
-    console.log("final data output",data);
-
-    var headers = Object.keys(data[0]);
-    var timeNow = new Date();
-    var fileName = "_soil_sample_data_download_"+ date_iso(timeNow,"datetime");
-    exportCSVFile(headers,data,fileName);
-    }
-    else {
-      alert("Lo sentimos mucho pero no hay datos que descargar de la base de datos")
-    }
   })
 }
 
@@ -341,31 +325,31 @@ function setup_project_forms_table() {
       {data: "project_forms_info.project_kobotools_account", title: "Project Name", visible: false},
       {data: "project_forms_info.project_slug", title: "Project Slug", visible: false},
       {data: "project_forms_info.form_id", title: "Form ID", visible: false},
-      {data: "xls_forms.form_title", title: getString(19), visible: true, width:"40%"},
-      {data: "project_forms_info.form_kobo_id", title: getString(20), visible: true, width:"20%"},
-      {data: "project_forms_info.count_records", title: getString(21), visible: true, witdh:"10%"},
-      {data: "project_forms_info.form_kobo_id", title: getString(22),visible:true, render: function(data,type,row,meta){
+      {data: "xls_forms.form_title", title: "Form Name", visible: true, width:"40%"},
+      {data: "project_forms_info.form_kobo_id", title: "Kobotools Form ID", visible: true, width:"20%"},
+      {data: "project_forms_info.count_records", title: "Number of Collected Records", visible: true, witdh:"10%"},
+      {data: "project_forms_info.form_kobo_id", title: "Status",visible:true, render: function(data,type,row,meta){
         console.log("row = ",row);
 
         if(data === null || data === ""){
-          return getString(17)
+          return "not depoyed"
         }
 
         //if form is deployed, suggest updating locations csv file
         if(data != null && data != ""){
-          return getString(18)
+          return "deployed"
         }
 
       }},
-      {data: "project_forms_info.form_kobo_id", title: getString(23), visible: true, width: "10%", render: function(data,type,row,meta){
+      {data: "project_forms_info.form_kobo_id", title: "Action", visible: true, width: "10%", render: function(data,type,row,meta){
 
         //if not deployed, render 'deploy' button;
         if(data === null || data === ""){
-          return "<button class='btn btn-link submit_button' onclick='deploy_form("+project.id+","+meta.row+")'>"+getString(12)+"</button>";
+          return "<button class='btn btn-link submit_button' onclick='deploy_form("+project.id+","+meta.row+")'>deploy</button>";
         }
         //else, render 'delete' button'
         else{
-          return "<button class='btn btn-link submit_button' onclick='delete_form("+project.id+","+meta.row+")'>"+getString(13)+"</button>";
+          return "<button class='btn btn-link submit_button' onclick='delete_form("+project.id+","+meta.row+")'>delete form</button>";
         }
       }}
     ];
@@ -387,14 +371,14 @@ function setup_project_forms_table() {
         pageLength: 150,
         buttons: [
         {
-            text: getString(14),
+            text: "Sync data from Kobotoolbox",
             action: function(e,dt,node,config){
               update_counts(dt);
             },
             className:"submit_button"
           },
           {
-            text: getString(15),
+            text: "Download Data",
             action: function(e,dt,node,config){
               downloaddata(project_id)
             },
@@ -426,7 +410,6 @@ function delete_form(project_id,row_id){
   var formId = rowData.project_forms_info.form_id;
   var dtId = rowData.DT_RowId;
 
-  //// ########################## BELOW NOT TRANSLATED #############################
   if(confirm("Are you sure you want to delete the "+rowData.xls_forms.form_title+ " form from your Kobotoolbox account? This will permanently delete the form from Kobotoolbox. We will fetch any new data into this platform before deleltion to avoid data loss.")){
     var delRequest = jQuery.ajax({
       url: vars.node_url + "/customDeleteForm",
@@ -527,7 +510,7 @@ function update_counts(dt){
       request.done(function(response){
 
         if(response.statusCode != 200) {
-          user_alert("Unable to retrieve data from Kobotoolbox. Please check that Kobotoolbox is currently available. If this error persists, please contact support@stats4sd.org.","danger");
+          user_alert("Unable to retriece data from Kobotoolbox. Please check that Kobotoolbox is currently available. If this error persists, please contact support@stats4sd.org.","danger");
 
           throw("warning - unable to reach Kobotoolbox site to retrieve new data. Please check that the Kobotoolbox site is currently accessible through the browser");
         }
@@ -541,7 +524,7 @@ function update_counts(dt){
 
   jQuery.when.apply(jQuery,requests).then(function(responses){
     working();
-    user_alert(getString(24),"info","alert-space");
+    user_alert("All deployed forms checked","info","alert-space");
   })
 }
 
@@ -646,7 +629,6 @@ function formCountResponse(dt,response,form,existing_ids){
       .done(function(response){
 
         working("success!");
-        working();
         console.log("response from db: ",response);
         user_alert("New records successfully pulled for " + form.xls_forms.form_title,"success","alert-space");
 
@@ -700,8 +682,8 @@ function parse_data_into_tables(data,form){
       if(data.gps){
         var gpsArray = data.gps.split(" ");
             console.log("gps array",gpsArray);
-            sampleValues[0]["samples"].longitude = gpsArray[0] || null
-            sampleValues[0]["samples"].latitude = gpsArray[1] || null
+            sampleValues[0]["samples"].latitude = gpsArray[0] || null
+            sampleValues[0]["samples"].longitude = gpsArray[1] || null
             sampleValues[0]["samples"].altitude = gpsArray[2] || null
             sampleValues[0]["samples"].accuracy = gpsArray[3] || null
       }
@@ -853,6 +835,43 @@ function parse_data_into_tables(data,form){
     })
     .done(function(response){
       console.log("response from inserting poxc to db: ",response);
+    })
+
+  }
+
+  if(formType == "ccrp_soil_agg") {
+    agg = {};
+    agg[0] = {};
+
+
+    agg[0]["Dt_RowId"] = 0;
+    agg[0]["analysis_agg"] = {
+      sample_id: data['sample_id'],
+      analysis_date: data['analysis_date'],
+      weight_soil: data['weight_soil'],
+      weight_cloth: data['weight_cloth'],
+      weight_stones2mm: data['weight_stones2mm'],
+      weight_2mm_aggreg: data['weight_2mm_aggreg'],
+      weight_cloth_250micron: data['weight_cloth_250micron'],
+      weight_250micron_aggreg: data['weight_250micron_aggreg'],
+      pct_stones: data['pct_stones'],
+      twomm_aggreg_pct: data['twomm_aggreg_pct'],
+      twofiftymicr_aggreg_pct: data['twofiftymicr_aggreg_pct'],
+    }
+
+    jQuery.ajax({
+      url: vars.ajax_url,
+      dataType: "json",
+      method:"POST",
+      data:{
+        action:"dt_analysis_agg",
+        secure:vars.nonce,
+        dt_action:"create",
+        data: agg
+      }
+    })
+    .done(function(response){
+      console.log("response from inserting agg to db: ",response);
     })
 
   }
