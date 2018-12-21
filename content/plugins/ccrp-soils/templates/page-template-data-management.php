@@ -7,13 +7,6 @@
 
 GLOBAL $wpdb;
 
-$test = $wpdb->get_results(
-"SELECT * FROM xls_form_questions");
-
-echo "<pre>" . var_export($test,true) . "</pre>";
-echo "<br/>######################<br/>";
-
-
 get_header(); ?>
 
   <div id="primary" class="content-area">
@@ -33,7 +26,7 @@ get_header(); ?>
       <p>This page is where you manage the forms that are shared with you through Kobotoolbox, and review and download data collected through those forms.</p>
 
       <div class="card">
-        
+
         <h4 class="card-header">Instructions</h4>
         <div class="card-body">
           <h5>1. Sync Forms to Kobotoolbox</h5>
@@ -54,7 +47,7 @@ get_header(); ?>
             <p class="alert alert-info mb-0">You are currently a member of <?php echo count($groups['groups']); ?> projects. Use the tabs to switch between your projects.
             </p>
           </div>
-          
+
           <div class="card-header mb-0 pb-0">
             <ul class="nav nav-tabs" id="projectTabs" role="tablist">
               <?php foreach($groups['groups'] as $groupid){
@@ -74,11 +67,11 @@ get_header(); ?>
           $active = "active";
         }
         ?>
-        
+
         <div class="tab-content card-body">
-            
+
           <?php foreach($groups['groups'] as $groupid) {
-              
+
             //get group details;
             $group_details = groups_get_group(array('group_id' => $groupid));
             $koboaccount = groups_get_groupmeta($groupid,'kobotools_account');
@@ -87,12 +80,12 @@ get_header(); ?>
               $koboaccount = 'none';
             }
 
-            
+
 
 
             ?>
             <div class="tab-pane <?php echo $active; ?>" id="<?php echo $groupid; ?>" role="tabpanel" aria-labelledby="<?php echo $groupid; ?>-tab">
-              
+
               <h3 class="mb-4">Project: <?php echo $group_details->name; ?> </h3>
               <p>Kobotoolbox user account: <span class="font-weight-bold"><?php echo $koboaccount; ?></span></p>
               <p class="font-italic"><a href="https://kc.kobotoolbox.org/">Go to Kobotools</a></p>
@@ -110,7 +103,7 @@ get_header(); ?>
                     <div id="buttons_for_forms_table<?php echo $groupid; ?>"></div>
                   </div>
                 </div>
-          
+
               <?php }
 
               else{
