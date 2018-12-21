@@ -21,7 +21,8 @@ use
 add_action('wp_ajax_dt_xls_form_questions','dt_xls_form_questions');
 
 function dt_xls_form_questions() {
-
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
 
   //include DataTables php script
   include WP_PLUGIN_DIR . "/wordpress-datatables/DataTablesEditor/php/DataTables.php";
@@ -37,6 +38,7 @@ function dt_xls_form_questions() {
     }
   }
 
+$db->sql('set names utf8');
   //setup the editor object
   $editor = Editor::inst( $db, 'xls_form_questions' )
 
@@ -47,13 +49,13 @@ function dt_xls_form_questions() {
       Field::inst('xls_form_questions.name')->validator('Validate::notEmpty'),
       Field::inst('xls_form_questions.label::english'),
       Field::inst('xls_form_questions.hint::english'),
-      Field::inst('xls_form_questions.label::espanol'),
+//      Field::inst('xls_form_questions.label::espanol'),
       Field::inst('xls_form_questions.hint::espanol'),
       Field::inst('xls_form_questions.constraint'),
-      // Field::inst('xls_form_questions.constraint_message::english'),
+      Field::inst('xls_form_questions.constraint_message::english'),
       // Field::inst('xls_form_questions.constraint_message::espanol'),
       Field::inst('xls_form_questions.required'),
-      // Field::inst('xls_form_questions.required_message::english'),
+      Field::inst('xls_form_questions.required_message::english'),
       // Field::inst('xls_form_questions.required_message::espanol'),
       Field::inst('xls_form_questions.appearance'),
       Field::inst('xls_form_questions.default'),
@@ -76,6 +78,7 @@ function dt_xls_form_questions() {
   $data = $editor
   ->process( $_POST )
   ->data();
+
 
   echo json_encode($data);
 

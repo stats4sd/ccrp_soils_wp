@@ -168,7 +168,18 @@ function dt_soils() {
     Field::inst("samples_merged.analysis_poxc-poxc_sample"),
     Field::inst("samples_merged.analysis_poxc-correct_moisture"),
     Field::inst("samples_merged.analysis_poxc-moisture"),
-    Field::inst("samples_merged.analysis_poxc-poxc_soil_corrected")
+    Field::inst("samples_merged.analysis_poxc-poxc_soil_corrected"),
+    Field::inst("samples_merged.analysis_agg-weight_soil"),
+    Field::inst("samples_merged.analysis_agg-weight_cloth"),
+    Field::inst("samples_merged.analysis_agg-weight_stones2mm"),
+    Field::inst("samples_merged.analysis_agg-weight_2mm_aggreg"),
+    Field::inst("samples_merged.analysis_agg-weight_cloth_250micron"),
+    Field::inst("samples_merged.analysis_agg-weight_250micron_aggreg"),
+    Field::inst("samples_merged.analysis_agg-pct_stones"),
+    Field::inst("samples_merged.analysis_agg-twomm_aggreg_pct"),
+    Field::inst("samples_merged.analysis_agg-twofiftymicr_aggreg_pct"),
+    Field::inst("samples_merged.analysis_agg-analysis_date")
+
   );
 
   if($project_id){
@@ -195,5 +206,6 @@ function dt_soils() {
   wp_die();
 
 }
+
 
 
