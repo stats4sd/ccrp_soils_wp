@@ -4,7 +4,7 @@
  * Example PHP implementation used for the index.html example
  */
 
-//get user group submitted: 
+//get user group submitted:
 //
 
 // Alias Editor classes so they are easy to use
@@ -39,8 +39,8 @@ function dt_soils() {
 
   $user_group_id = $_REQUEST['vars']['user_group_id'] ?? null;
   $project_id = $_REQUEST['vars']['project_id'] ?? null;;
-  
-  
+
+  //die($project_id);
   // OLD JOIN
   // //setup the editor object
   // $editor = Editor::inst( $db, 'samples' )
@@ -117,7 +117,7 @@ function dt_soils() {
   //     Field::inst('olsen_p_corrected')
   //   )
   // );
-  // 
+  //
 
 
   $editor = Editor::inst( $db, 'samples_merged','sample_id' )

@@ -34,3 +34,8 @@
 .card-footer.table-footer {
   padding: 0;
 }
+
+.site-title {
+    display: block;
+    margin-right: 50px;
+}

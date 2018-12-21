@@ -83,7 +83,7 @@ function getDtOptions(params){
 
   //if editor is specified, add links to the editor:
   if(params.hasOwnProperty("editor")){
-    
+
     //push the 'create' and 'remove' options to the buttons set:
     buttons.push({extend: "create",editor: params.editor});
 
@@ -149,8 +149,8 @@ function getDtOptions(params){
 // Includes:
 //    Setup the inline 'edit' buttons
 function dt_tables_init(datatable,params) {
-  
-   
+
+
   //if an editor is specified, setup the "edit" buttons for each row.
   if(params.hasOwnProperty("editor")){
       datatable.on('click', 'a.editor_edit', function (e) {
@@ -175,7 +175,7 @@ function dt_tables_init(datatable,params) {
       .container()
       .appendTo(jQuery('#'+params.buttons_target));
     })
-    
+
   }
 
 
@@ -221,16 +221,16 @@ return ({"err": "please specify an array of fields for the editor;"});
 
   //get the options:
   var editorOptions = getEditorOptions(params)
-  
+
   //initialise the editor:
   var editor = new jQuery.fn.dataTable.Editor(editorOptions);
-  
+
   //run the post-init functions to hook into the editor events;
   dt_editor_init(editor)
   return editor;
 }
 
-// *** GET Editor Options ** 
+// *** GET Editor Options **
 // Returns an object of customised options for front-end datatables editor:
 // parameters:
 // params = {
@@ -267,13 +267,13 @@ function getEditorOptions(params){
   return options;
 }
 
-// *** DT EDITOR INIT *** 
+// *** DT EDITOR INIT ***
 // Function that runs some custom code for all datatables editors created.
 // Includes:
 //    Setup all select functions with the "Select2" library
 //    Recode the datatables "action" so it doesn't conflict with wordpress wp-ajax actions.
 function dt_editor_init(editor) {
-  
+
   //when the editor is displayed, initialise all select inputs as select2.
   editor.on('open displayOrder',function(e,mode,action){
     jQuery('.DTE_Body_Content select')
@@ -314,9 +314,9 @@ function renderMultiCells(data,variableName){
               string+= partstring[j];
             }
             string+= "</span>";
-            
+
             } //endelse
-           
+
           } //endfor
           return string;
 } //end renderMultiCells
@@ -324,7 +324,7 @@ function renderMultiCells(data,variableName){
 
 // *** CREATE FILTER OBJ *** //
 // This function is used to create an object suitable for 'yadcf' to use as the 'data' for a filter.
-// parameters: 
+// parameters:
 //    data: data returned from an ajax call to a dt_editor server-side script.
 //    object: name of the top-level variable within data to look inside;
 //    variable: the variable name from within 'object' to return (terrible naming structure, I know. See the array.push structure below.)
@@ -390,7 +390,7 @@ function newFilters(filters,datatable,vars){
     function(schemas){
 
       //instead of mucking around with the arguments array and trying to match up the arrays to the calls, just used the filterData (which will be complete by now);
-      
+
       //note - filterData will have a bunch of "empty" slots, unless there is a filter defined for every column number.
 
       console.log("filter data = ",filterData);
@@ -433,7 +433,7 @@ function newFilters(filters,datatable,vars){
       //   console.log("fdata = ",filterData[key]);
       // });
 
-      
+
 
     },
 
@@ -456,9 +456,10 @@ function newFilters(filters,datatable,vars){
 // action = wordpress ajax action (which function to call);
 // id = id of individual record to return. Leave null if you want all records.
 function getData(vars,action,data={}){
-  
+
   data.action = action;
   data.secure = vars.nonce;
+  data.vars = vars;
 
   console.log("getData data = ",data);
 
@@ -471,8 +472,8 @@ function getData(vars,action,data={}){
 }
 
 
-// *** GET MUSTACHE *** 
-// Function that sends an ajax request to get a mustache template for rendering. 
+// *** GET MUSTACHE ***
+// Function that sends an ajax request to get a mustache template for rendering.
 // Returns a jqxhr object, which can be extended with .done() .fail() and .always() callbacks, or strung together with other promises with a $.when() function.
 function getMustache(vars,template) {
 
@@ -493,7 +494,7 @@ function getMustache(vars,template) {
 //  main_var: the variable name of the "primary" data object. This will be the main table, to which the other data objects must be made children. (When using MJoin, DataTables returns the primary table data at the same level as the joined data levels, which doesn't work for Mustaches).
 // }
 // Note - function requires EITHER data or data_res (data beats data_res) and either template or template_res (template beats template_res);
-// NOTE - could be extended to accept data and templates without the baggage of the "res" as data and temlpate parameters; then it can figure out whether the data_res or the data wins... 
+// NOTE - could be extended to accept data and templates without the baggage of the "res" as data and temlpate parameters; then it can figure out whether the data_res or the data wins...
 // NOTE - should probable explain the "main_var" and structures better...
 function renderMustache(params){
 
@@ -525,7 +526,7 @@ return ({"err": "please specify the target for the mustache (an id of an html el
   if(params.hasOwnProperty("data_res")){
     var data = params.data_res[0].data;
   }
-  
+
   if(params.hasOwnProperty("template")){
     var template = params.template;
   }
@@ -533,7 +534,7 @@ return ({"err": "please specify the target for the mustache (an id of an html el
   if(params.hasOwnProperty("template_res")){
     var template = params.template_res[0];
   }
-  
+
   //
   console.log("rendering mustache with template",template);
   console.log("rendering mustache with data",data);
@@ -548,7 +549,7 @@ return ({"err": "please specify the target for the mustache (an id of an html el
     //go through each item in the data array:
     data.forEach(function(item, index){
       //the item is one data object - i.e. 1 row from the main table plus all the associated linked table rows;
-      
+
       //put main table data into the tempGroup root;
       var tempGroup = item[params.main_var];
 
@@ -588,14 +589,14 @@ return ({"err": "please specify the target for the mustache (an id of an html el
 
 // *** Date to string ***
 // A custom function to return a date in string format.
-// Takes 2 parameters: 
+// Takes 2 parameters:
 //  - date: a JS Date Object, e.g. date = new Date();
 //  - type: a string which should be one of the following:
 //    - "year" (tells function to return just the year as a string;
 //    - "month" (will return yyyy-mm )
 //    - "day" (will return yyyy-mm-dd )
 //    - "datetime" (will return yyyy-mm-ddThh.mm.ss - i.e. the full ISO string just with the miliseconds removed)
-//  if Type is anything else, the function will return the full date.toISOString(); 
+//  if Type is anything else, the function will return the full date.toISOString();
 function date_iso(date,type="") {
 
 
@@ -618,7 +619,7 @@ function date_iso(date,type="") {
 // A generic function to generate and render a Bootstrap "alert" dismissable box to the page;
 // Takes 3 parameters:
 //    - text (string) - the text to display;
-//    - type (string) - the type of Bootstrap "alert" (success, info, warning, danger, etc); 
+//    - type (string) - the type of Bootstrap "alert" (success, info, warning, danger, etc);
 //    - target (string) - the <div> id of the html element to append the alert to.
 function user_alert(text,type,target){
 
@@ -653,7 +654,7 @@ function title(str) {
 // Function to sort an array by a particular string property.
 // Returns the array sorted alphabetically (a - z);
 function alphabetSort(array,sort_var){
-  
+
 
   array.sort(function(a,b){
     if(a[sort_var] < b[sort_var]) return -1;
@@ -702,7 +703,7 @@ function working(text=false){
 
 
 // Functions taken from https://gist.github.com/dannypule/48418b4cd8223104c6c92e3016fc0f61#file-json_to_csv-js
-// 
+//
 function convertToCSV(objArray) {
     var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
     var str = '';
@@ -823,7 +824,7 @@ function linkTableByFilter(params) {
         search += item;
       })
       search += ')(,|$)'
-      
+
       // search = '(^|,)' + data[0] + '(,|$)';
 
       if(params.hasOwnProperty('exact')){
@@ -846,7 +847,7 @@ function linkTableByFilter(params) {
       })
 
       data = data.toArray();
-      
+
       currentSearch = targetTable.column(targetCol).search();
       newSearch = currentSearch.replace(data,"");
       console.log("new search = ",newSearch);

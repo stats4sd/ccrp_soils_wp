@@ -67,7 +67,7 @@ foreach(scandir(dirname(__FILE__) . "/tbl") as $filename) {
 }
 
 class Soils_Data_Plugin {
-  
+
   // *****************************************************
   // Initialise the plugin
   // *****************************************************
@@ -115,7 +115,8 @@ class Soils_Data_Plugin {
       'nonce' => wp_create_nonce('pa_nonce'),
       'node_url' => NODE_URL,
       'user_group_ids' => $user_groups_ids,
-      'user_groups' => $user_groups
+      'user_groups' => $user_groups,
+      'lang' => apply_filters( 'wpml_current_language', NULL )
     );
   }
 
@@ -137,7 +138,7 @@ class Soils_Data_Plugin {
 
       //if there is - enqueue it and pass it the $localize aray as "vars"
       wp_register_script($post_slug, plugin_dir_url(__FILE__) . $scriptpath, array('jquery'),time(),true);
-      
+
       //localizing passes the $localize array into the javascript with the given variable name, in this case "vars":
       wp_localize_script($post_slug, 'vars', $localize);
       wp_enqueue_script($post_slug);
@@ -151,7 +152,7 @@ class Soils_Data_Plugin {
 
     $localize = $this->getLocal();
 
-    //plugin css file: 
+    //plugin css file:
     wp_enqueue_style( 'soils-style', plugin_dir_url( __FILE__ ) .'css/soils-style.css',array(),time() );
 
     wp_register_script( 'popper-script',  plugin_dir_url(__FILE__) . "js/node_modules/popper.js/dist/umd/popper.min.js", array(), time(), true );
@@ -227,7 +228,7 @@ class Soils_Data_Plugin {
   }
 
 
-  
+
 
 }
 
@@ -248,7 +249,7 @@ function bp_group_meta_init() {
     <label for="kobotools_account">Kobotoolbox Account username</label>
     <input id="kobotools_account" type="text" name="kobotools_account" value="<?php echo custom_field('kobotools_account'); ?>" />
     <br>
-    <?php 
+    <?php
   }
 
   // This saves the custom group meta – props to Boone for the function
@@ -273,7 +274,7 @@ function bp_group_meta_init() {
   add_filter( 'groups_custom_group_fields_editable', 'group_header_fields_markup' );
   add_action( 'groups_group_details_edited', 'group_header_fields_save' );
   add_action( 'groups_created_group',  'group_header_fields_save' );
-   
+
   // Show the custom field in the group header
   function show_field_in_header( ) {
     echo "<p> Kobotoolbox account username:" . custom_field('kobotools_account') . "</p>";
@@ -369,14 +370,14 @@ function get_data() {
 
 //   $result = $qrcodetag->getQrCodeUrl($value,100,'UTF-8','L',4,0);
 //   wp_send_json_success($result);
-// } // end get single barcode. 
+// } // end get single barcode.
 
 
 add_action('wp_ajax_create_barcode','create_barcode');
 add_action('wp_ajax_nopriv_create_barcode','create_barcode');
 function create_barcode() {
   GLOBAL $wpdb;
-  
+
   check_ajax_referer('pa_nonce', 'secure');
 
 
@@ -411,7 +412,7 @@ function create_barcode() {
 
   $updateQuery = $wpdb->get_results("
                                        UPDATE `barcodes`
-                                       SET `barcodes`.`code` = CONCAT(`farm_id`,`barcodes`.`id`), `barcodes`.`status`='coded' 
+                                       SET `barcodes`.`code` = CONCAT(`farm_id`,`barcodes`.`id`), `barcodes`.`status`='coded'
                                        WHERE `barcodes`.`status`='gen'");
   for($j=0;$j<$number;$j++){
     $id[$j] = $root_id . $id[$j];
@@ -452,7 +453,7 @@ function create_community_barcodes() {
       "farmer_name" => $farmers[$x]['farmer_name'],
     );
 
-    //add start or end of row for printing: 
+    //add start or end of row for printing:
     //
     if(($x+1) % 2 == 0 ) {
       $results[$x]["start_div"] = "";
@@ -467,8 +468,8 @@ function create_community_barcodes() {
   //then, run update command to turn the newly 'gen'-ed AI into a code that can be barcoded. This code will include the country and community IDs
 
   $updateQuery = $wpdb->get_results("
-                                       UPDATE `barcodes` 
-                                       SET `barcodes`.`code` = CONCAT(`farm_id`,`barcodes`.`id`), `barcodes`.`status`='coded' 
+                                       UPDATE `barcodes`
+                                       SET `barcodes`.`code` = CONCAT(`farm_id`,`barcodes`.`id`), `barcodes`.`status`='coded'
                                        WHERE `barcodes`.`status`='gen'");
 
   wp_send_json_success($results);
