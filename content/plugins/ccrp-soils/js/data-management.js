@@ -679,7 +679,7 @@ if(formType == "ccrp_soil_p") {
     p[0] = {};
 
         var sample_id = "";
-    if(data['bar_code']='1'){
+    if(data['bar_code']=='1'){
       sample_id = data['sample_id']
     }
     else {
@@ -811,13 +811,14 @@ if(formType == "ccrp_soil_p") {
     agg[0] = {};
 
     var sample_id = "";
-    if(data['bar_code']='1'){
+    if(data['bar_code']=='1'){
       sample_id = data['sample_id']
     }
     else {
       sample_id = data['no_bar_code']
     }
 
+	console.log("sample_id = ",sample_id)
 
     agg[0]["Dt_RowId"] = 0;
     agg[0]["analysis_agg"] = {
