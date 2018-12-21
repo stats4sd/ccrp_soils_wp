@@ -19,6 +19,8 @@
     "wpackagist-plugin/wpt-custom-mo-file":"*",
     "wpackagist-plugin/restrict-user-access":"*",
     "wpackagist-plugin/contact-form-7":"*",
+    "wpackagist-plugin/bp-registration-options":"*",
+    "wpackagist-plugin/polylang":"^2.4",
     "wpackagist-theme/wp-bootstrap-starter": "*",
     "wpackagist-theme/twentysixteen": "*",
     "dave_in_stats/wordpress-datatables": "dev-master",

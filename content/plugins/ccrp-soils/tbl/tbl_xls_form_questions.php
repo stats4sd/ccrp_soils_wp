@@ -4,7 +4,7 @@
  * Example PHP implementation used for the index.html example
  */
 
-//get user group submitted: 
+//get user group submitted:
 //
 
 // Alias Editor classes so they are easy to use
@@ -21,6 +21,7 @@ use
 add_action('wp_ajax_dt_xls_form_questions','dt_xls_form_questions');
 
 function dt_xls_form_questions() {
+
 
   //include DataTables php script
   include WP_PLUGIN_DIR . "/wordpress-datatables/DataTablesEditor/php/DataTables.php";
@@ -44,14 +45,16 @@ function dt_xls_form_questions() {
       Field::inst('xls_form_questions.id')->validator('Validate::notEmpty'),
       Field::inst('xls_form_questions.type')->validator('Validate::notEmpty'),
       Field::inst('xls_form_questions.name')->validator('Validate::notEmpty'),
-      Field::inst('xls_form_questions.label'),
-      Field::inst('xls_form_questions.hint'),
-      // Field::inst('xls_form_questions.label::spanish'),
-      // Field::inst('xls_form_questions.hint::spanish'),
+      Field::inst('xls_form_questions.label::english'),
+      Field::inst('xls_form_questions.hint::english'),
+      Field::inst('xls_form_questions.label::espanol'),
+      Field::inst('xls_form_questions.hint::espanol'),
       Field::inst('xls_form_questions.constraint'),
-      Field::inst('xls_form_questions.constraint_message'),
+      Field::inst('xls_form_questions.constraint_message::english'),
+      // Field::inst('xls_form_questions.constraint_message::espanol'),
       Field::inst('xls_form_questions.required'),
-      Field::inst('xls_form_questions.required_message'),
+      Field::inst('xls_form_questions.required_message::english'),
+      // Field::inst('xls_form_questions.required_message::espanol'),
       Field::inst('xls_form_questions.appearance'),
       Field::inst('xls_form_questions.default'),
       Field::inst('xls_form_questions.relevant'),
