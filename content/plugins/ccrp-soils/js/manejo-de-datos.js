@@ -74,23 +74,6 @@ jQuery(document).ready(function($){
   setup_project_forms_table();
 
 
-  // Get questions and choices to speed up form creation
-  questionGet = getData(vars,"dt_xls_form_questions")
-  .done(function(response){
-
-    console.log("question response",response);
-    //reformat response data to just get the question objects;
-    questions = response.data.map(function(item,index){
-      return item.xls_form_questions;
-    })
-    console.log("questions GOT",questions);
-  })
-  // in case of failure;
-  .fail(function(){
-    questions = 'error';
-    console.log("could not get xls form questions");
-  })
-
   choicesGet = getData(vars,"dt_xls_form_choices")
   .done(function(response){
     choices = response.data.map(function(item,index){
@@ -102,6 +85,28 @@ jQuery(document).ready(function($){
   .fail(function(){
     questions = 'error';
     console.log("could not get xls form choices");
+  })
+
+  // Get questions and choices to speed up form creation
+  questionGet = getData(vars,"dt_xls_form_questions")
+  .done(function(response){
+
+    console.log("question response",response);
+    if(!response) {
+      user_alert("warning; cannot retrieve questions for XLS forms. The form creation will likely not work.","warning");
+      return ;
+    }
+
+    //reformat response data to just get the question objects;
+    questions = response.data.map(function(item,index){
+      return item.xls_form_questions;
+    })
+    console.log("questions GOT",questions);
+  })
+  // in case of failure;
+  .fail(function(){
+    questions = 'error';
+    console.log("could not get xls form questions");
   })
 
 }); //end doc ready;
