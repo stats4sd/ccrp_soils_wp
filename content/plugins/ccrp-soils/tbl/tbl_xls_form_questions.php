@@ -4,7 +4,7 @@
  * Example PHP implementation used for the index.html example
  */
 
-//get user group submitted: 
+//get user group submitted:
 //
 
 // Alias Editor classes so they are easy to use
@@ -22,8 +22,7 @@ add_action('wp_ajax_dt_xls_form_questions','dt_xls_form_questions');
 
 function dt_xls_form_questions() {
 
-  echo "testing 1234";
-  
+
   //include DataTables php script
   include WP_PLUGIN_DIR . "/wordpress-datatables/DataTablesEditor/php/DataTables.php";
   check_ajax_referer('pa_nonce', 'secure');
@@ -48,8 +47,8 @@ function dt_xls_form_questions() {
       Field::inst('xls_form_questions.name')->validator('Validate::notEmpty'),
       Field::inst('xls_form_questions.label::english'),
       Field::inst('xls_form_questions.hint::english'),
-      Field::inst('xls_form_questions.label::spanish'),
-      Field::inst('xls_form_questions.hint::spanish'),
+      Field::inst('xls_form_questions.label::espanol'),
+      Field::inst('xls_form_questions.hint::espanol'),
       Field::inst('xls_form_questions.constraint'),
       Field::inst('xls_form_questions.constraint_message'),
       Field::inst('xls_form_questions.required'),
