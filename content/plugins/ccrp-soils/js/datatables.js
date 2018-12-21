@@ -467,6 +467,7 @@ function getData(vars,action,data={}){
   return jQuery.ajax({
     url: vars.ajax_url,
     dataType: 'json',
+    method: 'POST',
     data: data
   })
 }

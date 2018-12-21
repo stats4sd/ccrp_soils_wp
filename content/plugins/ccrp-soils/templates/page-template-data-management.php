@@ -5,6 +5,7 @@
  * @package sparkling-child
  */
 
+GLOBAL $wpdb;
 
 get_header(); ?>
 
@@ -90,6 +91,7 @@ get_header(); ?>
               <h3 class="mb-4"><?php _e("Project","twentysixteen-child")?>: <?php echo $group_details->name; ?> </h3>
               <p><?php _e("Kobotoolbox user account:","twentysixteen-child") ?> <span class="font-weight-bold"><?php echo $koboaccount; ?></span></p>
               <p class="font-italic"><a href="https://kc.kobotoolbox.org/"><?php _e("Go to Kobotools","twentysixteen-child") ?></a></p>
+
               <?php  if($koboaccount != "none"){ ?>
 
 
