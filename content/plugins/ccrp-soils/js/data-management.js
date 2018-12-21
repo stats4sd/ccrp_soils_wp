@@ -774,4 +774,41 @@ function parse_data_into_tables(data,form){
     })
 
   }
+
+  if(formType == "ccrp_soil_agg") {
+    agg = {};
+    agg[0] = {};
+
+
+    agg[0]["Dt_RowId"] = 0;
+    agg[0]["analysis_agg"] = {
+      sample_id: data['sample_id'],
+      analysis_date: data['analysis_date'],
+      weight_soil: data['weight_soil'],
+      weight_cloth: data['weight_cloth'],
+      weight_stones2mm: data['weight_stones2mm'],
+      weight_2mm_aggreg: data['weight_2mm_aggreg'],
+      weight_cloth_250micron: data['weight_cloth_250micron'],
+      weight_250micron_aggreg: data['weight_250micron_aggreg'],
+      pct_stones: data['pct_stones'],
+      twomm_aggreg_pct: data['twomm_aggreg_pct'],
+      twofiftymicr_aggreg_pct: data['twofiftymicr_aggreg_pct'],
+    }
+
+    jQuery.ajax({
+      url: vars.ajax_url,
+      dataType: "json",
+      method:"POST",
+      data:{
+        action:"dt_analysis_agg",
+        secure:vars.nonce,
+        dt_action:"create",
+        data: agg
+      }
+    })
+    .done(function(response){
+      console.log("response from inserting agg to db: ",response);
+    })
+
+  }
 }
