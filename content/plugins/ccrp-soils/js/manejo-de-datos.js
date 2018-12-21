@@ -739,12 +739,21 @@ function parse_data_into_tables(data,form){
 
   }
 
-  if(formType == "ccrp_soil_p") {
+if(formType == "ccrp_soil_p") {
     p = {};
     p[0] = {};
+
+        var sample_id = "";
+    if(data['bar_code']=='1'){
+      sample_id = data['sample_id']
+    }
+    else {
+      sample_id = data['no_bar_code']
+    }
+
     p[0]["Dt_RowId"] = 0;
     p[0]["analysis_p"] = {
-      sample_id: data['sample_id'],
+      sample_id: sample_id,
       analysis_date: data['analysis_date'],
       weight_soil: data['weight_soil'],
       vol_extract: data['vol_extract'],
@@ -866,10 +875,19 @@ function parse_data_into_tables(data,form){
     agg = {};
     agg[0] = {};
 
+    var sample_id = "";
+    if(data['bar_code']=='1'){
+      sample_id = data['sample_id']
+    }
+    else {
+      sample_id = data['no_bar_code']
+    }
+
+  console.log("sample_id = ",sample_id)
 
     agg[0]["Dt_RowId"] = 0;
     agg[0]["analysis_agg"] = {
-      sample_id: data['sample_id'],
+      sample_id: sample_id,
       analysis_date: data['analysis_date'],
       weight_soil: data['weight_soil'],
       weight_cloth: data['weight_cloth'],
