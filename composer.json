@@ -22,7 +22,12 @@
     "wpackagist-theme/wp-bootstrap-starter": "*",
     "wpackagist-theme/twentysixteen": "*",
     "dave_in_stats/wordpress-datatables": "dev-master",
-    "vedmack/yadcf": "dev-master"
+    "vedmack/yadcf": "dev-master",
+    "wpackagist-plugin/polylang": "^2.4",
+    "wpackagist-plugin/wp-maintenance-mode": "^2.2",
+    "wpackagist-plugin/buddypress-multilingual": "^1.6",
+    "wpackagist-plugin/mailgun": "^1.6",
+    "wpackagist-plugin/mailjet-for-wordpress": "^4.3"
   },
   "require-dev": {
     "wpackagist-plugin/debug-bar": "*",

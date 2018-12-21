@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3aabc35ca4df903d3beb8c755146cccc",
+    "content-hash": "1938fefd4fa6a482b53f22e0957d142d",
     "packages": [
         {
             "name": "composer/installers",
@@ -279,7 +279,7 @@
                 "reference": "master"
             },
             "type": "library",
-            "time": "2018-09-12T06:10:35+00:00"
+            "time": "2018-09-27T09:06:05+00:00"
         },
         {
             "name": "wpackagist-plugin/bp-member-type-generator",
@@ -340,6 +340,26 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/buddypress-members-only/"
+        },
+        {
+            "name": "wpackagist-plugin/buddypress-multilingual",
+            "version": "1.6",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/buddypress-multilingual/",
+                "reference": "tags/1.6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/buddypress-multilingual.1.6.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/buddypress-multilingual/"
         },
         {
             "name": "wpackagist-plugin/contact-form-7",
@@ -422,6 +442,66 @@
             "homepage": "https://wordpress.org/plugins/invite-anyone/"
         },
         {
+            "name": "wpackagist-plugin/mailgun",
+            "version": "1.6.1",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/mailgun/",
+                "reference": "tags/1.6.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/mailgun.1.6.1.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/mailgun/"
+        },
+        {
+            "name": "wpackagist-plugin/mailjet-for-wordpress",
+            "version": "4.3.0",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/mailjet-for-wordpress/",
+                "reference": "tags/4.3.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/mailjet-for-wordpress.4.3.0.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/mailjet-for-wordpress/"
+        },
+        {
+            "name": "wpackagist-plugin/polylang",
+            "version": "2.4",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/polylang/",
+                "reference": "tags/2.4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/polylang.2.4.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/polylang/"
+        },
+        {
             "name": "wpackagist-plugin/qr-code-tag",
             "version": "1.0",
             "source": {
@@ -460,6 +540,26 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/restrict-user-access/"
+        },
+        {
+            "name": "wpackagist-plugin/wp-maintenance-mode",
+            "version": "2.2.1",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/wp-maintenance-mode/",
+                "reference": "trunk"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/wp-maintenance-mode.zip?timestamp=1531728264",
+                "reference": null,
+                "shasum": null
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/wp-maintenance-mode/"
         },
         {
             "name": "wpackagist-plugin/wpt-custom-mo-file",
