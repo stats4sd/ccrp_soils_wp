@@ -15,8 +15,7 @@ $forms = $wpdb->get_results(
         $wpdb->prepare("SELECT id, form_id, form_title FROM xls_forms")
     );
 
-echo "<pre>" . var_export($forms,true) . "</pre>";
-echo "<br/>######################<br/>";
+
 
 ?>
 
@@ -25,7 +24,6 @@ echo "<br/>######################<br/>";
 
     <main id="main" class="site-main" role="main">
 
-      <?php while ( have_posts() ) : the_post(); ?>
 
 <h1>XLS Form Uploader</h1>
 
@@ -40,11 +38,12 @@ echo "<br/>######################<br/>";
 
 <?php endif; ?>
 
-<?php get_template_part( 'content', 'page' ); ?>
+<?php get_template_part( 'content', 'page' );
 
+echo "<pre>" . var_export($forms,true) . "</pre>";
+echo "<br/>######################<br/>";
 
-
-      <?php endwhile; // end of the loop. ?>
+?>
 
     </main><!-- #main -->
 
