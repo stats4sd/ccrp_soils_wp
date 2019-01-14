@@ -12,7 +12,7 @@ global $wpdb;
 get_header();
 
 $forms = $wpdb->get_results(
-        $wpdb->prepare("SELECT id, form_id, form_title FROM xls_forms");
+        $wpdb->prepare("SELECT id, form_id, form_title FROM xls_forms")
     );
 
 echo "<pre>" . var_export($forms,true) . "</pre>";
