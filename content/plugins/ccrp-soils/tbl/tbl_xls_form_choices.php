@@ -22,6 +22,9 @@ function dt_xls_form_choices() {
   include WP_PLUGIN_DIR . "/wordpress-datatables/DataTablesEditor/php/DataTables.php";
   check_ajax_referer('pa_nonce', 'secure');
 
+$db->sql('set names utf8');
+
+
   if($_SERVER['REQUEST_METHOD'] === "POST"){
     if(isset($_POST['dt_action']) && isset($_POST['action'])) {
       $_POST['action'] = $_POST['dt_action'];
@@ -39,7 +42,7 @@ function dt_xls_form_choices() {
       Field::inst('xls_form_choices.list_name')->validator('Validate::notEmpty'),
       Field::inst('xls_form_choices.name')->validator('Validate::notEmpty'),
       Field::inst('xls_form_choices.label::english'),
-      Field::inst('xls_form_choices.label::spanish')
+      Field::inst('xls_form_choices.label::espanol')
     );
 
 

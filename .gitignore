@@ -39,3 +39,12 @@ installer*.*
 # ...except for the custom ones!
 !/content/plugins/ccrp-soils/
 !/content/themes/*-child/
+
+##################
+# Ignore server files
+.htaccess
+.htaccess.*
+*installer*
+*.sql
+*.zip
+web.config*

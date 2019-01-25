@@ -49,7 +49,7 @@ $db->sql('set names utf8');
       Field::inst('xls_form_questions.name')->validator('Validate::notEmpty'),
       Field::inst('xls_form_questions.label::english'),
       Field::inst('xls_form_questions.hint::english'),
-//      Field::inst('xls_form_questions.label::espanol'),
+      Field::inst('xls_form_questions.label::espanol'),
       Field::inst('xls_form_questions.hint::espanol'),
       Field::inst('xls_form_questions.constraint'),
       Field::inst('xls_form_questions.constraint_message::english'),
