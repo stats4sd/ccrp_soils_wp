@@ -627,30 +627,39 @@ function parse_data_into_tables(data,form){
     var sampleDate = data.date.substring(0,10);
 
     sampleValues[0]["samples"] = {};
-      sampleValues[0]["samples"].id = data['sample_id']
-      sampleValues[0]["samples"].username = data.username
-      sampleValues[0]["samples"].plot_id = data.plot_id
-      sampleValues[0]["samples"].date = sampleDate || new Date()
-      sampleValues[0]["samples"].depth = data.depth
-      sampleValues[0]["samples"].texture = data.texture || ""
-      sampleValues[0]["samples"].at_plot = data.at_plot || "0"
-      sampleValues[0]["samples"].plot_photo = data.photo || "";
+    sampleValues[0]["samples"].id = data.sample_id
+    sampleValues[0]["samples"].username = data.username
 
+    // currently null
+    sampleValues[0]["samples"].plot_id = data.plot_id
+
+
+    sampleValues[0]["samples"].date = sampleDate || new Date()
+    sampleValues[0]["samples"].depth = data.depth
+    sampleValues[0]["samples"].texture = data.texture || ""
+    sampleValues[0]["samples"].at_plot = data.at_plot || "0"
+
+    //just pulls photo name/id. Need to pull actual photo next!
+    sampleValues[0]["samples"].plot_photo = data.plot_photo || "";
+
+    console.log("DATA GPS ", data._geolocation);
       //parse GPS:
-      if(data.gps){
-        var gpsArray = data.gps.split(" ");
-            console.log("gps array",gpsArray);
-            sampleValues[0]["samples"].latitude = gpsArray[0] || null
-            sampleValues[0]["samples"].longitude = gpsArray[1] || null
-            sampleValues[0]["samples"].altitude = gpsArray[2] || null
-            sampleValues[0]["samples"].accuracy = gpsArray[3] || null
+      if(data._geolocation[0] != null){
+        var gpsArray = data.location.split(" ");
+        console.log("gps array",gpsArray);
+        sampleValues[0]["samples"].latitude = gpsArray[0] || null
+        sampleValues[0]["samples"].longitude = gpsArray[1] || null
+        sampleValues[0]["samples"].altitude = gpsArray[2] || null
+        sampleValues[0]["samples"].accuracy = gpsArray[3] || null
       }
 
-
-      sampleValues[0]["samples"].comment = data.comment;
-      sampleValues[0]["samples"].farmer_quick = data.farmer || ""
+      // pulled from pagee, not form data:
       sampleValues[0]["samples"].project_id = projectId;
-      sampleValues[0]["samples"].comnunity_quick = data.na_community || ""
+
+      sampleValues[0]["samples"].comment = data.comms
+      sampleValues[0]["samples"].farmer_quick = data.farmer || ""
+
+      sampleValues[0]["samples"].community_quick = data.na_community || ""
 
       console.log("sample values to enter", sampleValues)
     //insert Sample values into Db via editor ajax function:
@@ -674,11 +683,15 @@ function parse_data_into_tables(data,form){
 
   }
 
-if(formType == "ccrp_soil_p") {
+  if(formType == "ccrp_soil_p") {
+
+
+    console.log("soils_p data = ",data)
+
     p = {};
     p[0] = {};
 
-        var sample_id = "";
+    var sample_id = "";
     if(data['bar_code']=='1'){
       sample_id = data['sample_id']
     }
@@ -695,7 +708,7 @@ if(formType == "ccrp_soil_p") {
       vol_topup: data['vol_topup'],
       color: data['color'],
       cloudy: data['cloudy'],
-      raw_conc: data['Raw_conc'],
+      raw_conc: data['raw_conc'],
       olsen_p: data['olsen_p'],
       blank_water: data['blank_water'],
       correct_moisture: data['correct_moisture'],
@@ -723,7 +736,9 @@ if(formType == "ccrp_soil_p") {
 
   }
 
-    if(formType == "ccrp_soil_ph") {
+  if(formType == "ccrp_soil_ph") {
+
+    console.log("soils_ph data = ",data)
     ph = {};
     ph[0] = {};
     ph[0]["Dt_RowId"] = 0;
@@ -755,35 +770,45 @@ if(formType == "ccrp_soil_p") {
 
   }
 
-    if(formType == "ccrp_soil_poxc") {
+  if(formType == "ccrp_soil_poxc") {
+
+    console.log("soils_poxc data = ",data)
     poxc = {};
     poxc[0] = {};
 
-    if(data.hasOwnProperty('moisture')){
-        if(data.estimated_soilmoisture != null && data.estimated_soilmoisture != 0 && data.estimated_soilmoisture != "") {
-            soil_moisture = data.estimated_soilmoisture;
-        }
-        else {
-            soil_moisture = 0;
-        }
+    var sample_id = "";
+    if(data['bar_code']=='1'){
+      sample_id = data['sample_id']
     }
     else {
+      sample_id = data['no_bar_code']
+    }
+
+    if(data.hasOwnProperty('moisture')){
+      if(data.estimated_soilmoisture != null && data.estimated_soilmoisture != 0 && data.estimated_soilmoisture != "") {
+        soil_moisture = data.estimated_soilmoisture;
+      }
+      else {
         soil_moisture = 0;
+      }
+    }
+    else {
+      soil_moisture = 0;
     }
 
     poxc[0]["Dt_RowId"] = 0;
     poxc[0]["analysis_poxc"] = {
-      sample_id: data['sample_id'],
+      sample_id: sample_id,
       analysis_date: data['analysis_date'],
       weight_soil: data['weight_soil'],
       color: data['color'],
       color100: data['color100'],
       conc_digest: data['conc_digest'],
       cloudy: data['cloudy'],
-      colorimeter: data['colorimeter'],
+      pct_reduction_color: data['pct_reduction_color'],
       raw_conc: data['raw_conc'],
       poxc_sample: data['poxc_sample'],
-      posx_soil: data['posx_soil'],
+      poxc_soil: data['poxc_soil'],
       correct_moisture: data['correct_moisture'],
       moisture: soil_moisture,
       poxc_soil_corrected: data['poxc_soil_corrected']
@@ -807,6 +832,8 @@ if(formType == "ccrp_soil_p") {
   }
 
   if(formType == "ccrp_soil_agg") {
+
+    console.log("soils_agg data = ",data)
     agg = {};
     agg[0] = {};
 
@@ -818,7 +845,7 @@ if(formType == "ccrp_soil_p") {
       sample_id = data['no_bar_code']
     }
 
-	console.log("sample_id = ",sample_id)
+    console.log("sample_id = ",sample_id)
 
     agg[0]["Dt_RowId"] = 0;
     agg[0]["analysis_agg"] = {

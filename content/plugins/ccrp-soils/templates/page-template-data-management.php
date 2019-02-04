@@ -46,7 +46,7 @@ get_header(); ?>
         <?php if(count($groups['groups']) > 1) { ?>
           <div class="card-header">
             <?php $countGroups = count($groups['groups']); ?>
-            <p class="alert alert-info mb-0"><?php _e("You are currently a member of % projects. Use the tabs to switch between your projects.","twentysixteen-child",$countGroups) ?>
+            <p class="alert alert-info mb-0"><?php _e("You are currently a member of ". $countGroups ." projects. Use the tabs to switch between your projects.","twentysixteen-child") ?>
             </p>
           </div>
 
