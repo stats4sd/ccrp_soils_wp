@@ -2,12 +2,77 @@ var editor;
 var projectFormsTable = [];
 var questions;
 var choices;
+
+// temp langauge fix. Should refactor:
+
+function getString(num){
+  if(vars.lang == "en"){
+    switch(num){
+      case 1: return "deploying form to kobotoolbox account";
+      case 2: return "generating XLS Form";
+      case 3: return "Sending form data to Kobotoolbox";
+      case 4: return "form successfully added to Kobotoolbox";
+      case 5: return "sharing with project account";
+      case 6: return "The new form has been shared with your project's Kobotoolbox account";
+      case 7: return "You can now access the form via Kobotoolbox / ODK-Collect.";
+      case 8: return "The new form was created and added to Kobotoolbox, but could not be shared with your project's Kobotoolbox account";
+      case 9: return "Please check that you have entered the correct kobotools username in your project settings.";
+      case 10: return "The new form could not be created. Please share the following ODK error message with support@stats4sd.org:";
+      case 11: return "The Kobotoolbox API could not be contacted. Please check your connection settings and try again. If this issue persists, please contact support@stats4sd.org";
+      case 12: return "deploy";
+      case 13: return "delete form";
+      case 14: return "Sync data from Kobotoolbox";
+      case 15: return "Download Data";
+      case 17: return "not depoyed";
+      case 18: return "deployed";
+      case 19: return "Form Name";
+      case 20: return "Kobotools Form ID";
+      case 21: return "Number of Collected Records";
+      case 22: return "Status";
+      case 23: return "Action";
+      case 24: return "All deployed forms checked";
+    }
+  }
+
+  if(vars.lang == "es"){
+    switch(num){
+      case 1: return "desplegando la formulario";
+      case 2: return "generando la formulario";
+      case 3: return "Sending form data to Kobotoolbox";
+      case 4: return "Formulario añadido a kobotoolbox";
+      case 5: return "sharing with project account";
+      case 6: return "The new form has been shared with your project's Kobotoolbox account";
+      case 7: return "You can now access the form via Kobotoolbox / ODK-Collect.";
+      case 8: return "The new form was created and added to Kobotoolbox, but could not be shared with your project's Kobotoolbox account";
+      case 9: return "Please check that you have entered the correct kobotools username in your project settings.";
+      case 10: return "The new form could not be created. Please share the following ODK error message with support@stats4sd.org:";
+      case 11: return "The Kobotoolbox API could not be contacted. Please check your connection settings and try again. If this issue persists, please contact support@stats4sd.org";
+      case 12: return "desplegar";
+      case 13: return "eliminar formulario";
+      case 14: return "Sincronizar los datos de kobotoolbox";
+      case 15: return "Descargar datos";
+      case 17: return "no desplegado";
+      case 18: return "desplegado";
+      case 19: return "Nombre del formulario";
+      case 20: return "ID del formulario en Kobotools";
+      case 21: return "Número de registros recopilados";
+      case 22: return "Estado";
+      case 23: return "Acción";
+      case 24: return "Todas las formas desplegadas verificadas";
+    }
+  }
+}
+
 jQuery(document).ready(function($){
+
+
+  console.log("LANGUAGE = ", vars.lang);
 
   console.log("current user", vars.user_group_ids);
 
   // Setup main forms table(s);
   setup_project_forms_table();
+
 
   choicesGet = getData(vars,"dt_xls_form_choices")
   .done(function(response){
@@ -44,13 +109,11 @@ jQuery(document).ready(function($){
     console.log("could not get xls form questions");
   })
 
-
-
 }); //end doc ready;
 
 
 function deploy_form(table_id,id){
-  working("deploying form to kobotoolbox account");
+  working(getString(1));
 
   var form = {};
 
@@ -62,7 +125,7 @@ function deploy_form(table_id,id){
 
   console.log(data)
 
-  working("generating XLS Form");
+  working(getString(2));
 
   //take form_id and get build form:...
   form.survey = prepare_survey(form_type_id);
@@ -71,7 +134,7 @@ function deploy_form(table_id,id){
 
   console.log(form);
 
-  working("Sending form data to Kobotoolbox");
+  working(getString(3));
   // Add form name (for XLS form builder in Node app)
   form.name = form.settings.form_title
 
@@ -90,7 +153,7 @@ function deploy_form(table_id,id){
     //checking if the response has an API url to to the form on Kobo works as another check of success.
     if(response.msg.url){
 
-      user_alert("form successfully added to Kobotoolbox","info");
+      user_alert(getString(4),"info");
       form.kobo_id = response.msg.formid;
 
       //save kobo_id to the projects_forms tabls for later reference;
@@ -120,7 +183,7 @@ function deploy_form(table_id,id){
       //take project_kobo_account, then add sharing permissions via Kobo API.
       kobotools_account = data[0].project_forms_info.project_kobotools_account;
 
-      working("sharing with project account (" + kobotools_account + ")")
+      working(getString(5) + " ( " + kobotools_account + " ) ")
 
       //prepare json object for sharing API call
       shareBody = {};
@@ -137,13 +200,14 @@ function deploy_form(table_id,id){
         data: JSON.stringify(shareBody),
         success: function(response){
           working("sharing success");
-          user_alert("The new form has been shared with your project's Kobotoolbox account ("+kobotools_account+"). You can now access the form via Kobotoolbox / ODK-Collect.","success");
+          user_alert(getString(6) +  " ( "+kobotools_account+" )" + getString(7) ,"success");
           console.log("response from sharing = ",response);
           working();
         },
+        // #######################################################################################################################################
         error: function(response){
           working("sharing error");
-          user_alert("The new form was created and added to Kobotoolbox, but could not be shared with your project's Kobotoolbox account ("+kobotools_account+"). Please check that you have entered the correct kobotools username in your project settings.")
+          user_alert(getString(8) + " ( "+kobotools_account+" ) " + getString(9))
           console.log("error from sharing = ",response);
           working();
         }
@@ -156,12 +220,12 @@ function deploy_form(table_id,id){
       // display ODK error in console.
       text = "ODK error: " + response.msg.text;
       console.log("error, ", response.msg.text)
-      user_alert("The new form could not be created. Please share the following ODK error message with support@stats4sd.org: " + text,"danger");
+      user_alert(getString(10) + text,"danger");
       working();
     }
   })
   .fail(function(response){
-    user_alert("The Kobotoolbox API could not be contacted. Please check your connection settings and try again. If this issue persists, please contact support@stats4sd.org","danger");
+    user_alert(getString(11),"danger");
     working();
     console.log("error",response);
   })
@@ -282,31 +346,31 @@ function setup_project_forms_table() {
       {data: "project_forms_info.project_kobotools_account", title: "Project Name", visible: false},
       {data: "project_forms_info.project_slug", title: "Project Slug", visible: false},
       {data: "project_forms_info.form_id", title: "Form ID", visible: false},
-      {data: "xls_forms.form_title", title: "Form Name", visible: true, width:"40%"},
-      {data: "project_forms_info.form_kobo_id", title: "Kobotools Form ID", visible: true, width:"20%"},
-      {data: "project_forms_info.count_records", title: "Number of Collected Records", visible: true, witdh:"10%"},
-      {data: "project_forms_info.form_kobo_id", title: "Status",visible:true, render: function(data,type,row,meta){
+      {data: "xls_forms.form_title", title: getString(19), visible: true, width:"40%"},
+      {data: "project_forms_info.form_kobo_id", title: getString(20), visible: true, width:"20%"},
+      {data: "project_forms_info.count_records", title: getString(21), visible: true, witdh:"10%"},
+      {data: "project_forms_info.form_kobo_id", title: getString(22),visible:true, render: function(data,type,row,meta){
         console.log("row = ",row);
 
         if(data === null || data === ""){
-          return "not depoyed"
+          return getString(17)
         }
 
         //if form is deployed, suggest updating locations csv file
         if(data != null && data != ""){
-          return "deployed"
+          return getString(18)
         }
 
       }},
-      {data: "project_forms_info.form_kobo_id", title: "Action", visible: true, width: "10%", render: function(data,type,row,meta){
+      {data: "project_forms_info.form_kobo_id", title: getString(23), visible: true, width: "10%", render: function(data,type,row,meta){
 
         //if not deployed, render 'deploy' button;
         if(data === null || data === ""){
-          return "<button class='btn btn-link submit_button' onclick='deploy_form("+project.id+","+meta.row+")'>deploy</button>";
+          return "<button class='btn btn-link submit_button' onclick='deploy_form("+project.id+","+meta.row+")'>"+getString(12)+"</button>";
         }
         //else, render 'delete' button'
         else{
-          return "<button class='btn btn-link submit_button' onclick='delete_form("+project.id+","+meta.row+")'>delete form</button>";
+          return "<button class='btn btn-link submit_button' onclick='delete_form("+project.id+","+meta.row+")'>"+getString(13)+"</button>";
         }
       }}
     ];
@@ -328,14 +392,14 @@ function setup_project_forms_table() {
         pageLength: 150,
         buttons: [
         {
-            text: "Sync data from Kobotoolbox",
+            text: getString(14),
             action: function(e,dt,node,config){
               update_counts(dt);
             },
             className:"submit_button"
           },
           {
-            text: "Download Data",
+            text: getString(15),
             action: function(e,dt,node,config){
               downloaddata(project_id)
             },
@@ -367,6 +431,7 @@ function delete_form(project_id,row_id){
   var formId = rowData.project_forms_info.form_id;
   var dtId = rowData.DT_RowId;
 
+  //// ########################## BELOW NOT TRANSLATED #############################
   if(confirm("Are you sure you want to delete the "+rowData.xls_forms.form_title+ " form from your Kobotoolbox account? This will permanently delete the form from Kobotoolbox. We will fetch any new data into this platform before deleltion to avoid data loss.")){
     var delRequest = jQuery.ajax({
       url: vars.node_url + "/customDeleteForm",
@@ -481,7 +546,7 @@ function update_counts(dt){
 
   jQuery.when.apply(jQuery,requests).then(function(responses){
     working();
-    user_alert("All deployed forms checked","info","alert-space");
+    user_alert(getString(24),"info","alert-space");
   })
 }
 
@@ -640,8 +705,8 @@ function parse_data_into_tables(data,form){
       if(data.gps){
         var gpsArray = data.gps.split(" ");
             console.log("gps array",gpsArray);
-            sampleValues[0]["samples"].latitude = gpsArray[0] || null
-            sampleValues[0]["samples"].longitude = gpsArray[1] || null
+            sampleValues[0]["samples"].longitude = gpsArray[0] || null
+            sampleValues[0]["samples"].latitude = gpsArray[1] || null
             sampleValues[0]["samples"].altitude = gpsArray[2] || null
             sampleValues[0]["samples"].accuracy = gpsArray[3] || null
       }
@@ -818,7 +883,7 @@ if(formType == "ccrp_soil_p") {
       sample_id = data['no_bar_code']
     }
 
-	console.log("sample_id = ",sample_id)
+  console.log("sample_id = ",sample_id)
 
     agg[0]["Dt_RowId"] = 0;
     agg[0]["analysis_agg"] = {

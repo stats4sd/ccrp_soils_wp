@@ -7,6 +7,13 @@
 
 GLOBAL $wpdb;
 
+//require_once get_site_url() . "plugins/ccrp-soils/soils-data.php";
+$soils_data = new Soils_Data_Plugin();
+$local = $soils_data->enqueue_js('data-management');
+
+
+
+
 get_header(); ?>
 
   <div id="primary" class="content-area">

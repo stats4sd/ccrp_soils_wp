@@ -26,21 +26,29 @@
  */
 
 
+// *****************************************************
+// Starting Code - Include Dependancies etc
+// *****************************************************
+
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-if ( !function_exists( 'get_home_path' ) ) require_once( dirname(__FILE__) . '/../../../wp/wp-admin/includes/file.php' );
-
-
-
-
 // Require Guzzle for making direct HTTP requests
 require_once "vendor/autoload.php";
 use GuzzleHttp\Client;
 
-include plugin_dir_path( __FILE__ ) . "class-my-bp-groups-widget.php";
+// Check for get_home_path() Wordpress helper function
+if ( !function_exists( 'get_home_path' ) ) require_once( dirname(__FILE__) . '/../../../wp/wp-admin/includes/file.php' );
+
+
+include plugin_dir_path( __FILE__ ) . "buddypress/class-my-bp-groups-widget.php";
+include plugin_dir_path( __FILE__ ) . "buddypress/custom-buddypress-tab.php";
+include plugin_dir_path( __FILE__ ) . "buddypress/functions.php";
+include plugin_dir_path( __FILE__ ) . "functions/barcodes.php";
+
+
 /*
 All the files with names starting with "tbl_" contain AJAX functions for querying the database.
 They use DataTables Editor to make the connection, to get, edit and create records in the database.
@@ -78,9 +86,6 @@ class Soils_Data_Plugin {
     //queue general scripts
     add_action('wp_enqueue_scripts',array($this,'dt_scripts'));
 
-    //find and queue page-specific scripts
-    add_action('wp_enqueue_scripts',array($this,'init_js'));
-
     //create extra things when new group is created:
     add_action('groups_group_create_complete',array($this,'create_bp_group_extra'));
 
@@ -89,7 +94,7 @@ class Soils_Data_Plugin {
   // *****************************************************
   // Convenience function to get a particular set of values to 'localize' javascript files:
   // *****************************************************
-  public function getLocal() {
+  public static function getLocal() {
 
     // get buddypress groups of current user;
     $user_groups_ids = BP_Groups_Member::get_group_ids( get_current_user_id());
@@ -110,7 +115,6 @@ class Soils_Data_Plugin {
       'user_id' => get_current_user_id(),
       'site_url' => get_site_url(),
       'ajax_url' => admin_url('admin-ajax.php'),
-      //'ajax_url' => 'http://localhost/ccrp_soils_wp/wp-admin/admin-ajax.php',
       'mustache_url' => plugin_dir_url(__FILE__) . "views",
       'nonce' => wp_create_nonce('pa_nonce'),
       'node_url' => NODE_URL,
@@ -123,39 +127,37 @@ class Soils_Data_Plugin {
   // *****************************************************
   // Function to add the needed Javascript files for each page into the queue:
   // *****************************************************
-  public function init_js() {
+  public function enqueue_js($filename) {
     GLOBAL $post;
 
     $localize = $this->getLocal();
 
-    //get the slug for the current page:
-    $post_slug = $post->post_name;
 
     //check if there is an associated Javascript file (associated by filename);
-    $scriptpath = "js/" . $post_slug . ".js";
+    $scriptpath = "js/" . $filename . ".js";
 
     if(file_exists(plugin_dir_path(__FILE__) . $scriptpath)) {
 
       //if there is - enqueue it and pass it the $localize aray as "vars"
-      wp_register_script($post_slug, plugin_dir_url(__FILE__) . $scriptpath, array('jquery'),time(),true);
+      wp_register_script($filename, plugin_dir_url(__FILE__) . $scriptpath, array('jquery'),time(),true);
 
       //localizing passes the $localize array into the javascript with the given variable name, in this case "vars":
-      wp_localize_script($post_slug, 'vars', $localize);
-      wp_enqueue_script($post_slug);
+      wp_localize_script($filename, 'vars', $localize);
+      wp_enqueue_script($filename);
     }
   }
 
   // *****************************************************
   // Queue dependancies, including DataTables
   // *****************************************************
-  public function dt_scripts() {
+  protected function dt_scripts() {
 
     $localize = $this->getLocal();
 
     //plugin css file:
-    wp_enqueue_style( 'soils-style', plugin_dir_url( __FILE__ ) .'css/soils-style.css',array(),time() );
+    wp_enqueue_style('soils-style', plugin_dir_url( __FILE__ ) .'css/soils-style.css',array(),time() );
 
-    wp_register_script( 'popper-script',  plugin_dir_url(__FILE__) . "js/node_modules/popper.js/dist/umd/popper.min.js", array(), time(), true );
+    wp_register_script('popper-script',  plugin_dir_url(__FILE__) . "js/node_modules/popper.js/dist/umd/popper.min.js", array(), time(), true );
     wp_enqueue_script('popper-script');
 
     //register and queue the general datatables functions:
@@ -183,319 +185,32 @@ class Soils_Data_Plugin {
 
   }
 
-  // *******************************
-  // DataTables / WP AJAX Action fixer
-  // *******************************
-
-  //run this function inside any WP AJAX datatables editor function. It will replace the 'action' property (needed to tell WordPress which of the AJAX functions to run) with the dt_action (needed so DataTables Editor knows whether to run a Create, Replace or Remove function on the database)
-  public function replace_dt_action($request){
-    if(isset($request['dt_action']) && isset($request['action'])) {
-      $request['action'] = $request['dt_action'];
-      unset($request['dt_action']);
-    }
-
-    return $request;
-  }
-
   // *****************************************************
   // GIVE FORMS TO A NEW PROJECT
   // *****************************************************
-  public function create_bp_group_extra($group_id) {
+  protected function create_bp_group_extra($group_id) {
     global $wpdb;
 
     //get list of active soils forms;
-
     $forms = $wpdb->get_results("SELECT * FROM xls_forms", ARRAY_A);
 
-    //die("<pre>" . var_export($forms,true) . "</pre>");
 
-    //add new record to projects_forms for each form x group
+    //add each form to the newly created group
     foreach($forms as $index => $form) {
-      $export = "<pre>" . var_export($form,true) . "</pre><br/>#############################<br/>";
-      $form_id = $form["id"];
       $data = array(
-        "form_id" => $form_id,
+        "form_id" => $form["id"],
         "project_id" => $group_id,
         "deployed" => false
       );
-      $export .= "<pre>" . var_export($data,true) . "</pre><br/>#############################<br/>";
 
       $insert = $wpdb->insert("projects_xls_forms",$data);
-            //die("<pre>" . var_export($export,true) . "</pre>");
     }
 
-
   }
-
-
-
 
 }
-
-
-// *****************************************************
-// Add Additional fields to BuddyPress Groups
-// *****************************************************
-function bp_group_meta_init() {
-  function custom_field($meta_key=''){
-    //get current group id and load meta_key value if passed.
-    return groups_get_groupmeta(bp_get_group_id(),$meta_key);
-
-  }
-
-  //function to generate the field markup for front-end form:
-  function group_header_fields_markup() {
-    global $bp, $wpdb;?>
-    <label for="kobotools_account">Kobotoolbox Account username</label>
-    <input id="kobotools_account" type="text" name="kobotools_account" value="<?php echo custom_field('kobotools_account'); ?>" />
-    <br>
-    <?php
-  }
-
-  // This saves the custom group meta – props to Boone for the function
-  // Where $plain_fields = array.. you may add additional fields, eg
-  //  $plain_fields = array(
-  //      'field-one',
-  //      'field-two'
-  //  );
-  function group_header_fields_save( $group_id ) {
-    global $bp, $wpdb;
-    $plain_fields = array(
-      'kobotools_account'
-    );
-    foreach( $plain_fields as $field ) {
-      $key = $field;
-      if ( isset( $_POST[$key] ) ) {
-        $value = $_POST[$key];
-        groups_update_groupmeta( $group_id, $field, $value );
-      }
-    }
-  }
-  add_filter( 'groups_custom_group_fields_editable', 'group_header_fields_markup' );
-  add_action( 'groups_group_details_edited', 'group_header_fields_save' );
-  add_action( 'groups_created_group',  'group_header_fields_save' );
-
-  // Show the custom field in the group header
-  function show_field_in_header( ) {
-    echo "<p> Kobotoolbox account username:" . custom_field('kobotools_account') . "</p>";
-  }
-  add_action('bp_group_header_meta' , 'show_field_in_header') ;
-}
-
-add_action( 'bp_include', 'bp_group_meta_init' );
-
-
-
-
-/*=============================================
-=            Ajax Functions                   =
-=============================================*/
-
-
-//Function to get a defined SQL table (or view) and expose it as a json blob into javascript:
-//This is an AJAX function, so first add the 2 actions to let Wordpress handle the ajax calls properly:
-//
-add_action('wp_ajax_get_data', 'get_data');
-add_action('wp_ajax_nopriv_get_data','get_data');
-
-function get_data() {
-  //use the global $wpdb to access the main wordpress database
-  GLOBAL $wpdb;
-
-
-  //get table and filter info from the GET request:
-  $tbl = $_POST['tbl'];
-  $where = $_POST['where'];
-  $equals = $_POST['equals'];
-
-  //Create a new wpdb object to access the main soils database.
-  $soilsdb = new wpdb('root','ssd@soils-dev','soils','localhost');
-
-  //Setup main select statement;
-  $sql = "SELECT * FROM ";
-
-  //if there is a where and a filter variable:
-  if($where!="" && $equals!="") {
-    //Create the filter part of the query.
-    $sql_where = " WHERE ";
-    $sql_equals = " = ";
-  } else {
-    $sql_where = "";
-    $sql_equals = "";
-  }
-
-
-  //Prepare and execute the statement against soilsdb
-  $query = $soilsdb->get_results("SELECT * FROM " . $tbl . $sql_where . $where . $sql_equals . $equals . ";");
-
-
-  wp_send_json_success(json_encode($query));
-
-
-} //end get_data();
-
-
-
-// add_action('wp_ajax_get_barcodes', 'get_barcodes');
-// add_action('wp_ajax_nopriv_get_barcodes','get_barcodes');
-// function get_barcodes() {
-//   GLOBAL $wpdb, $qrcodetag;
-//   $soilsdb = new wpdb('root','ssd@soils-dev','soils','localhost');
-
-//   $community_id = $_POST['community_id'];
-
-//   $sql = "SELECT * FROM `barcodes` WHERE `community_id`=" . $community_id;
-//   $query = $soilsdb->query($sql);
-//   if($query == 0) {
-//     //then no barcodes were found for this community;
-//     wp_send_json_success("0");
-//   }
-//   else {
-//     $results = $soilsdb->get_results($sql);
-//     //go through results and add the QR code url:
-//     for($x = 0;$x < sizeof($results);$x++) {
-//       $results[$x]->url = $qrcodetag->getQrCodeUrl($results[$x]->code,100,'UTF-8','L',4,0);
-//     }
-//     wp_send_json_success(json_encode($results));
-//   }
-
-// } //end get_barcodes()
-
-// //get single barcode from string
-// add_action('wp_ajax_get_single_barcode', 'get_single_barcode');
-// add_action('wp_ajax_nopriv_get_single_barcode','get_single_barcode');
-// function get_single_barcode() {
-//     GLOBAL $qrcodetag;
-//   $value = $_POST['value'];
-
-//   $result = $qrcodetag->getQrCodeUrl($value,100,'UTF-8','L',4,0);
-//   wp_send_json_success($result);
-// } // end get single barcode.
-
-
-add_action('wp_ajax_create_barcode','create_barcode');
-add_action('wp_ajax_nopriv_create_barcode','create_barcode');
-function create_barcode() {
-  GLOBAL $wpdb;
-
-  check_ajax_referer('pa_nonce', 'secure');
-
-
-  //if a root_id has been passed, setup the codes based on that.
-  if(isset($_POST['root_id'])){
-    $root_id = $_POST['root_id'];
-    $root_id .= "_";
-
-  }
-
-  //otherwise, create a random 4-digit code to use as the base-code
-  else{
-    $root_id = random_int(1000,9999);
-    $root_id = (string)$root_id;
-    $root_id .= "_";
-  }
-
-
-  $number = $_POST['number'];
-
-  $query = [];
-  $ids = [];
-  //generate the number of barcodes asked for:
-  for($i = 0; $i<$number; $i++){
-    // //create entry in barcodes table (to generate an auto-increment value);
-    $query[] = $wpdb->insert('barcodes',array('farm_id' => $root_id, 'status'=>"gen"));
-    //get the ID of the inserted row:
-    $id[] = $wpdb->insert_id;
-  }
-
-  //then, run update command to turn the newly 'gen'-ed ID into a code that can be barcoded. This code will include the country and community IDs
-
-  $updateQuery = $wpdb->get_results("
-                                       UPDATE `barcodes`
-                                       SET `barcodes`.`code` = CONCAT(`farm_id`,`barcodes`.`id`), `barcodes`.`status`='coded'
-                                       WHERE `barcodes`.`status`='gen'");
-  for($j=0;$j<$number;$j++){
-    $id[$j] = $root_id . $id[$j];
-  }
-  wp_send_json_success($id);
-} //end create barcode()
-
-add_action('wp_ajax_create_community_barcodes','create_community_barcodes');
-add_action('wp_ajax_nopriv_create_community_barcodes','create_community_barcodes');
-function create_community_barcodes() {
-  GLOBAL $wpdb;
-
-  $farmers = $_POST['farmers'];
-  $farmer_count = count($farmers);
-
-  $query = [];
-  $ids = [];
-  $codes = [];
-  $results = [];
-
-  //for each farmer, generate a code and put it into array;
-  for($x = 0; $x < $farmer_count; $x++) {
-    // $farmer_id = $farmers[$x]['id'];
-    // $farmer_name = $farmers[$x]['farmer_name'];
-
-    //create entry in barcodes table (to generate an auto-increment value);
-    $query[$x] =  $wpdb->insert('barcodes',array('farm_id' => $farmers[$x]['id'], 'status'=>"gen"));
-
-    //get the ID of the inserted row:
-    $id[$x] = $wpdb->insert_id;
-
-    //concatenate to make the code
-    $codes[$x] = $farmers[$x]['id'] . $id[$x];
-
-    $results[$x] = array(
-      "code" => $codes[$x],
-      "farmer_id" => $farmers[$x]['id'],
-      "farmer_name" => $farmers[$x]['farmer_name'],
-    );
-
-    //add start or end of row for printing:
-    //
-    if(($x+1) % 2 == 0 ) {
-      $results[$x]["start_div"] = "";
-      $results[$x]["end_div"] = "</div>";
-    }
-    else {
-      $results[$x]["start_div"] = "<div class='row'>";
-      $results[$x]["end_div"] = "";
-    }
-
-  }
-  //then, run update command to turn the newly 'gen'-ed AI into a code that can be barcoded. This code will include the country and community IDs
-
-  $updateQuery = $wpdb->get_results("
-                                       UPDATE `barcodes`
-                                       SET `barcodes`.`code` = CONCAT(`farm_id`,`barcodes`.`id`), `barcodes`.`status`='coded'
-                                       WHERE `barcodes`.`status`='gen'");
-
-  wp_send_json_success($results);
-
-} //end create barcode()
-
-add_action('wp_ajax_update_barcodes','update_barcodes');
-add_action('wp_ajax_nopriv_update_barcodes','update_barcodes');
-function update_barcodes(){
-  GLOBAL $wpdb, $qrcodetag;
-  $soilsdb = new wpdb('root','ssd@soils-dev','soils','localhost');
-
-
-  $community_id = $_POST['value'];
-
-  $sql = "UPDATE `barcodes` set `status`='printed' where `community_id`='" . $community_id . "';";
-
-  $query = $soilsdb->get_results($sql);
-  wp_send_json_success(json_encode($query));
-}
-
-
-
 
 // Initialize the plugin
 $soils_data = new Soils_Data_Plugin();
 
 
-include plugin_dir_path( __FILE__ ) . "custom-buddypress-tab.php";

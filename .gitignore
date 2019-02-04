@@ -25,7 +25,7 @@ _archive.zip
 installer*.*
 
 ##################
-# Ignore all content... 
+# Ignore all content...
 /content/*
 
 # ...except for plugins and themes

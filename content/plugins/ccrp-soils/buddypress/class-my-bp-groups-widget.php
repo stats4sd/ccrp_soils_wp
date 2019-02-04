@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MY BuddyPress Groups Widget.
  *REQUIRES BUDDYPRESS

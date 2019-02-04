@@ -7,6 +7,9 @@
  * @package sparkling-child
  */
 
+$soils_data = new Soils_Data_Plugin();
+$local = $soils_data->enqueue_js('qr-codes');
+
 get_header(); ?>
 
   <div id="primary" class="content-area">
