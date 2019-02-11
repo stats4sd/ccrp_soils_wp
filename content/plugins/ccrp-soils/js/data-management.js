@@ -355,11 +355,9 @@ function setup_project_forms_table() {
         }
         //else, render 'delete' button'
         else{
-          return `
-          <button class='btn btn-link btn-sm submit_button' onclick='update_form("+project.id+","+meta.row+")'>UPDATE FORM</button>
-          <br/>
-          <button class='btn btn-link btn-sm submit_button' onclick='delete_form("+project.id+","+meta.row+")'>delete form</button>
-          `;
+          return "<button class='btn btn-link btn-sm submit_button' onclick='update_form("+project.id+","+meta.row+")'>UPDATE FORM</button>"+
+         "<br/>"+
+          "<button class='btn btn-link btn-sm submit_button' onclick='delete_form("+project.id+","+meta.row+")'>delete form</button>";
         }
       }}
     ];

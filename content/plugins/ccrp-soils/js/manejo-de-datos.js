@@ -422,10 +422,9 @@ function setup_project_forms_table() {
         //else, render 'delete' button'
         //else, render 'delete' button'
         else{
-          return `
-          <button class='btn btn-link btn-sm submit_button' onclick='update_form("+project.id+","+meta.row+")'>`+ getString(25) + `</button>;
-          <br/>
-          <button class='btn btn-link btn-sm submit_button' onclick='delete_form("+project.id+","+meta.row+")'>` + getString(13) + `</button>`;
+          return "<button class='btn btn-link btn-sm submit_button' onclick='update_form("+project.id+","+meta.row+")'>"+ getString(25) + "</button>"+
+          "<br/>"+
+          "<button class='btn btn-link btn-sm submit_button' onclick='delete_form("+project.id+","+meta.row+")'>" + getString(13) + "</button>";
         }
       }}
     ];
