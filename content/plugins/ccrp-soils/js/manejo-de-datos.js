@@ -61,7 +61,7 @@ function getString(num){
       case 22: return "Estado";
       case 23: return "Acción";
       case 24: return "Todas las formas desplegadas verificadas";
-      case 25: return "Actualiza el formulario";
+      case 25: return "actualizar formulario";
       case 26: return "Formulario actualizo a kobotoolbox"
     }
   }
