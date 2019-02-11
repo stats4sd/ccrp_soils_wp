@@ -49,7 +49,8 @@ function dt_samples() {
       Field::inst( 'samples.plot_id' ),
       Field::inst( 'samples.farmer_quick' ),
       Field::inst( 'samples.community_quick' ),
-      Field::inst( 'samples.project_id' )
+      Field::inst( 'samples.project_id' ),
+      Field::inst( 'samples.username' )
 
     );
 
@@ -59,7 +60,7 @@ function dt_samples() {
   $id = $_REQUEST['id'] ?? null;
 
   if($id){
-    
+
     //add where filter to $editor:
     $editor = $editor->where('samples.id',$id);
   }
