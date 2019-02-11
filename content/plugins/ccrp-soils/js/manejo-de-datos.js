@@ -139,6 +139,11 @@ function update_form(table_id,id){
   form.name = form.settings.form_title;
   form.kobo_id = data[0].project_forms_info.form_kobo_id;
 
+  //override form_id string with value from database (if exists);
+  if(data[0].project_forms_info.form_kobo_id_string != null) {
+    form.settings[0].form_id = data[0].project_forms_info.form_kobo_id_string;
+  }
+
   jQuery.ajax({
     url: vars.node_url + "/customUpdateForm",
     method: "PATCH",
@@ -362,7 +367,7 @@ function prepare_settings(data){
   settings[0].form_title = pName + " - " + settings[0].form_title;
 
   //Apply testing string to allow for multiples...
-  settings[0].form_id += "_test_" + Math.floor((Math.random() * 100000) + 1).toString()
+  //settings[0].form_id += "_test_" + Math.floor((Math.random() * 100000) + 1).toString()
 
   return settings;
 }
@@ -442,7 +447,8 @@ function setup_project_forms_table() {
           "<br/>"+
           "<button class='btn btn-link btn-sm submit_button' onclick='delete_form("+project.id+","+meta.row+")'>" + getString(13) + "</button>";
         }
-      }}
+      }},
+      {data: "project_forms_info.form_kobo_id_string", title: "Kobotools Form ID", visible: false}
     ];
 
 

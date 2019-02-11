@@ -4,7 +4,7 @@
  * Example PHP implementation used for the index.html example
  */
 
-//get user group submitted: 
+//get user group submitted:
 //
 
 // Alias Editor classes so they are easy to use
@@ -61,6 +61,7 @@ function dt_project_forms() {
     Field::inst( 'xls_forms.instance_name'),
 
     Field::inst( 'project_forms_info.form_kobo_id' ),
+    Field::inst( 'project_forms_info.form_kobo_id_string' ),
     Field::inst( 'project_forms_info.deployed' ),
     Field::inst( 'project_forms_info.count_records' ),
     Field::inst( 'project_forms_info.id_list' )
