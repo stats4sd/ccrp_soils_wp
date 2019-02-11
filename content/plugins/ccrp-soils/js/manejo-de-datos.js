@@ -31,6 +31,7 @@ function getString(num){
       case 22: return "Status";
       case 23: return "Action";
       case 24: return "All deployed forms checked";
+      case 25: return "Update Form";
     }
   }
 
@@ -59,6 +60,7 @@ function getString(num){
       case 22: return "Estado";
       case 23: return "Acción";
       case 24: return "Todas las formas desplegadas verificadas";
+      case 25: return "Actualiza el formulario";
     }
   }
 }
@@ -110,6 +112,54 @@ jQuery(document).ready(function($){
   })
 
 }); //end doc ready;
+
+function update_form(table_id,id){
+  working("redeploying form to kobotoolbox account");
+
+  var form = {};
+
+  //get row data;
+  var data = projectFormsTable[table_id].rows(id).data().toArray();
+  var recordId = data[0].project_forms_info.id;
+  var form_type_id = data[0].project_forms_info.form_id;
+
+  console.log(data)
+
+  working("generating XLS Form");
+
+  //take form_id and get build form:...
+  form.survey = prepare_survey(form_type_id);
+  form.choices = prepare_choices(form.survey,form_type_id);
+  form.settings = prepare_settings(data[0]);
+
+  console.log(form);
+
+  working("Sending form data to Kobotoolbox");
+  // Add form name (for XLS form builder in Node app)
+  form.name = form.settings.form_title;
+  form.kobo_id = data[0].project_forms_info.form_kobo_id;
+
+  jQuery.ajax({
+    url: vars.node_url + "/customDeployForm",
+    method: "POST",
+    dataType: "json",
+    contentType: "application/json; charset=utf-8",
+    data: JSON.stringify(form)
+  })
+  .done(function(response){
+    console.log("success",response);
+
+    if(response.msg.url){
+      user_alert("form successfully updated in Kobotoolbox","info");
+      working();
+    }
+  })
+  .fail(function(response){
+    user_alert("Failed to update form on kobotools with ID " + form.kobo_id + "Please screenshot this message and send it to support@stats4sd.org: " + response);
+    working();
+  })
+
+}
 
 
 function deploy_form(table_id,id){
@@ -370,8 +420,13 @@ function setup_project_forms_table() {
           return "<button class='btn btn-link submit_button' onclick='deploy_form("+project.id+","+meta.row+")'>"+getString(12)+"</button>";
         }
         //else, render 'delete' button'
+        //else, render 'delete' button'
         else{
-          return "<button class='btn btn-link submit_button' onclick='delete_form("+project.id+","+meta.row+")'>"+getString(13)+"</button>";
+          return `
+          <button class='btn btn-link btn-sm submit_button' onclick='update_form("+project.id+","+meta.row+")'>`+ getString(25) + `</button>";
+          <br/>
+          <button class='btn btn-link btn-sm submit_button' onclick='delete_form("+project.id+","+meta.row+")'>` + getString(13) + `</button>`
+          `;
         }
       }}
     ];
