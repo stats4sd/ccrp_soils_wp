@@ -140,7 +140,7 @@ function update_form(table_id,id){
   form.kobo_id = data[0].project_forms_info.form_kobo_id;
 
   jQuery.ajax({
-    url: vars.node_url + "/customDeployForm",
+    url: vars.node_url + "/customUpdateForm",
     method: "POST",
     dataType: "json",
     contentType: "application/json; charset=utf-8",
