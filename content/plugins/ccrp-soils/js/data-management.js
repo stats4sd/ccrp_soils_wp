@@ -299,8 +299,10 @@ function prepare_settings(data){
   pName = pName.replace(/\s/g,"-")
 
   //prepend project ID to form ID and title.
-  settings[0].form_id = pName + "_" + settings[0].form_id;
-  settings[0].form_title = pName + " - " + settings[0].form_title;
+  if(! settings[0].form_id.startsWith(pName)) {
+    settings[0].form_id = pName + "_" + settings[0].form_id;
+    settings[0].form_title = pName + " - " + settings[0].form_title;
+  }
 
   //Apply testing string to allow for multiples...
   //settings[0].form_id += "_test_" + Math.floor((Math.random() * 100000) + 1).toString()
