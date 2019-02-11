@@ -141,7 +141,7 @@ function update_form(table_id,id){
 
   jQuery.ajax({
     url: vars.node_url + "/customUpdateForm",
-    method: "POST",
+    method: "PATCH",
     dataType: "json",
     contentType: "application/json; charset=utf-8",
     data: JSON.stringify(form)
