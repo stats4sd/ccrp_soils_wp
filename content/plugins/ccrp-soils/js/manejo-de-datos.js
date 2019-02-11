@@ -372,6 +372,7 @@ function prepare_settings(data){
     settings[0].form_title = pName + " - " + settings[0].form_title;
   }
 
+  settings[0].version = data.xls_forms.version + "_d-" + date_iso(new Date(), "datetime")
   //Apply testing string to allow for multiples...
   //settings[0].form_id += "_test_" + Math.floor((Math.random() * 100000) + 1).toString()
 
