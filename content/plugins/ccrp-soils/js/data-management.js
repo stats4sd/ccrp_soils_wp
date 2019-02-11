@@ -48,6 +48,53 @@ jQuery(document).ready(function($){
 
 }); //end doc ready;
 
+function update_form(table_id,id){
+  working("redeploying form to kobotoolbox account");
+
+  var form = {};
+
+  //get row data;
+  var data = projectFormsTable[table_id].rows(id).data().toArray();
+  var recordId = data[0].project_forms_info.id;
+  var form_type_id = data[0].project_forms_info.form_id;
+
+  console.log(data)
+
+  working("generating XLS Form");
+
+  //take form_id and get build form:...
+  form.survey = prepare_survey(form_type_id);
+  form.choices = prepare_choices(form.survey,form_type_id);
+  form.settings = prepare_settings(data[0]);
+
+  console.log(form);
+
+  working("Sending form data to Kobotoolbox");
+  // Add form name (for XLS form builder in Node app)
+  form.name = form.settings.form_title;
+  form.kobo_id = data[0].project_forms_info.form_kobo_id;
+
+  jQuery.ajax({
+    url: vars.node_url + "/customDeployForm",
+    method: "POST",
+    dataType: "json",
+    contentType: "application/json; charset=utf-8",
+    data: JSON.stringify(form)
+  })
+  .done(function(response){
+    console.log("success",response);
+
+    if(response.msg.url){
+      user_alert("form successfully updated in Kobotoolbox","info");
+      working();
+    }
+  })
+  .fail(function(response){
+    user_alert("Failed to update form on kobotools with ID " + form.kobo_id + "Please screenshot this message and send it to support@stats4sd.org: " + response);
+    working();
+  })
+
+}
 
 function deploy_form(table_id,id){
   working("deploying form to kobotoolbox account");
