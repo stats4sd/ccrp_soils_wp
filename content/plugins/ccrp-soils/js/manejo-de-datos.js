@@ -154,6 +154,7 @@ function update_form(table_id,id){
   .done(function(response){
     console.log("success",response);
     var msg = JSON.parse(response.msg.body);
+    console.log("MESSAGE , ", msg);
 
     if(response.msg.url){
       user_alert("form successfully updated in Kobotoolbox","info");
