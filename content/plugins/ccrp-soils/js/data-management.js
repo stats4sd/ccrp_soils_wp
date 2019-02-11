@@ -66,7 +66,7 @@ function deploy_form(table_id,id){
 
   //take form_id and get build form:...
   form.survey = prepare_survey(form_type_id);
-  form.choices = prepare_choices(form.survey);
+  form.choices = prepare_choices(form.survey,form_type_id);
   form.settings = prepare_settings(data[0]);
 
   console.log(form);
@@ -186,7 +186,7 @@ function prepare_survey(form_type_id) {
 
 //function takes list of questions and prepares the choices sheet to include all required choice lists;
 //returns json object for the choices sheet
-function prepare_choices(questions) {
+function prepare_choices(questions,form_type_id) {
 
   // Matches lookups from 'select_one [choices]' and 'select_multiple [choices]'
   // Always include the placeholder choice, so the sheet headers are always rendered.
@@ -210,7 +210,7 @@ function prepare_choices(questions) {
   //go through all the choices, and if their list_name matches one of the choicesTracker items, add it to selectedChoices.
     var selectedChoices = jQuery.map(choices,function(item,index){
     if(choicesTracker.some(i => i == item.list_name)) {
-      return item;
+      if(item.form_id == form_type_id) return item;
     }
   })
 
