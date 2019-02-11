@@ -90,8 +90,8 @@ function update_form(table_id,id){
   })
   .done(function(response){
     console.log("success",response);
-
-    if(response.msg.url){
+    var msg = JSON.pasrse(response.msg);
+    if(msg.url){
       user_alert("form successfully updated in Kobotoolbox","info");
       working();
     }
