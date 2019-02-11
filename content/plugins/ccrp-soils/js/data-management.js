@@ -208,10 +208,12 @@ function prepare_choices(questions,form_type_id) {
   })
 
   //go through all the choices, and if their list_name matches one of the choicesTracker items, add it to selectedChoices.
-    var selectedChoices = jQuery.map(choices,function(item,index){
-    if(choicesTracker.some(i => i == item.list_name)) {
-      if(item.form_id == form_type_id) return item;
-    }
+    var selectedChoices = choices.map(function(choicesItem,index){
+      choicesTracker.forEach(function(choiceTrackerItem,index){
+        if(choicesItem.list_name == choicesTracker && choicesItem.form_id == form_type_id){
+          return choicesItem;
+        }
+      })
   })
 
   return selectedChoices;
