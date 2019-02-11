@@ -32,6 +32,7 @@ function getString(num){
       case 23: return "Action";
       case 24: return "All deployed forms checked";
       case 25: return "Update Form";
+      case 26: return "Form successfully updated in Kobotoolbox";
     }
   }
 
@@ -61,6 +62,7 @@ function getString(num){
       case 23: return "Acción";
       case 24: return "Todas las formas desplegadas verificadas";
       case 25: return "Actualiza el formulario";
+      case 26: return "Formulario actualizo a kobotoolbox"
     }
   }
 }
@@ -157,7 +159,7 @@ function update_form(table_id,id){
     console.log("MESSAGE , ", msg);
 
     if(msg.url){
-      user_alert("form successfully updated in Kobotoolbox","info");
+      user_alert(getString(26),"info");
       working();
     }
   })
