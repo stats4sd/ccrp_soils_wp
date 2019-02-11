@@ -42,7 +42,9 @@ $db->sql('set names utf8');
       Field::inst('xls_form_choices.list_name')->validator('Validate::notEmpty'),
       Field::inst('xls_form_choices.name')->validator('Validate::notEmpty'),
       Field::inst('xls_form_choices.label::english'),
-      Field::inst('xls_form_choices.label::espanol')
+      Field::inst('xls_form_choices.label::espanol'),
+      Field::inst('xls_form_choices.form_id')
+
     );
 
 

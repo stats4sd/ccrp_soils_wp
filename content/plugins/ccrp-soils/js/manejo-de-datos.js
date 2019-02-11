@@ -323,12 +323,28 @@ function prepare_choices(questions,form_type_id) {
 
   //go through all the choices, and if their list_name matches one of the choicesTracker items, add it to selectedChoices.
     var selectedChoices = choices.map(function(choicesItem,index){
+      var selectedChoicesPart = {};
+      console.log("CHOICES ITEM = ", choicesItem);
+      console.log("formTypeId = ",form_type_id);
       choicesTracker.forEach(function(choiceTrackerItem,index){
-        if(choicesItem.list_name == choicesTracker && choicesItem.form_id == form_type_id){
-          return choicesItem;
+        if(choicesItem.list_name == choiceTrackerItem && choicesItem.form_id == form_type_id || choicesItem.form_id == null){
+          selectedChoicesPart = choicesItem;
+        }
+        else {
+          selectedChoicesPart.id == -1;
         }
       })
+
+     if(selectedChoicesPart.id > -1) return selectedChoicesPart;
+
   })
+
+  selectedChoices = selectedChoices.filter( function(item){
+    if(item) return true;
+    return false;
+  });
+
+  console.log("SELECTED CHOICES = ", selectedChoices);
   return selectedChoices;
 }
 
