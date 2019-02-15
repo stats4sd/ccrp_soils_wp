@@ -887,6 +887,15 @@ function parse_data_into_tables(data,form){
   if(formType == "ccrp_soil_ph") {
 
     console.log("soils_ph data = ",data)
+
+    var sample_id = "";
+    if(data['bar_code']=='1'){
+      sample_id = data['sample_id']
+    }
+    else {
+      sample_id = data['no_bar_code']
+    }
+
     ph = {};
     ph[0] = {};
     ph[0]["Dt_RowId"] = 0;

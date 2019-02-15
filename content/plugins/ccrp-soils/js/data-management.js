@@ -73,7 +73,7 @@ function update_form(table_id,id){
   // Add form name (for XLS form builder in Node app)
   form.name = form.settings.form_title;
   form.kobo_id = data[0].project_forms_info.form_kobo_id;
-  
+
   //override form_id string with value from database (if exists);
   if(data[0].project_forms_info.form_kobo_id_string != null) {
     form.settings[0].form_id = data[0].project_forms_info.form_kobo_id_string;
@@ -275,7 +275,7 @@ function prepare_choices(questions,form_type_id) {
           selectedChoicesPart.id == -1;
         }
       })
-     
+
      if(selectedChoicesPart.id > -1) return selectedChoicesPart;
 
   })
@@ -818,11 +818,20 @@ function parse_data_into_tables(data,form){
   if(formType == "ccrp_soil_ph") {
 
     console.log("soils_ph data = ",data)
+
+    var sample_id = "";
+    if(data['bar_code']=='1'){
+      sample_id = data['sample_id']
+    }
+    else {
+      sample_id = data['no_bar_code']
+    }
+
     ph = {};
     ph[0] = {};
     ph[0]["Dt_RowId"] = 0;
     ph[0]["analysis_ph"] = {
-      sample_id: data['sample_id'],
+      sample_id: sample_id,
       analysis_date: data['analysis_date'],
       weight_soil: data['weight_soil'],
       vol_water: data['vol_water'],
