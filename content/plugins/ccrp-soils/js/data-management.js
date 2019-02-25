@@ -12,7 +12,7 @@ function getString(num){
       case 2: return "generating XLS Form";
       case 3: return "Sending form data to Kobotoolbox";
       case 4: return "form successfully added to Kobotoolbox";
-      case 5: return "sharing with project account";
+      case 5: return "sharisng with project account";
       case 6: return "The new form has been shared with your project's Kobotoolbox account";
       case 7: return "You can now access the form via Kobotoolbox / ODK-Collect.";
       case 8: return "The new form was created and added to Kobotoolbox, but could not be shared with your project's Kobotoolbox account";
@@ -111,6 +111,61 @@ jQuery(document).ready(function($){
 
 }); //end doc ready;
 
+function update_form(table_id,id){
+  working("redeploying form to kobotoolbox account");
+
+  var form = {};
+
+  //get row data;
+  var data = projectFormsTable[table_id].rows(id).data().toArray();
+  var recordId = data[0].project_forms_info.id;
+  var form_type_id = data[0].project_forms_info.form_id;
+
+  console.log(data)
+
+  working("generating XLS Form");
+
+  //take form_id and get build form:...
+  form.survey = prepare_survey(form_type_id);
+  form.choices = prepare_choices(form.survey,form_type_id);
+  form.settings = prepare_settings(data[0]);
+
+  console.log(form);
+
+  working("Sending form data to Kobotoolbox");
+  // Add form name (for XLS form builder in Node app)
+  form.name = form.settings.form_title;
+  form.kobo_id = data[0].project_forms_info.form_kobo_id;
+
+  //override form_id string with value from database (if exists);
+  if(data[0].project_forms_info.form_kobo_id_string != null) {
+    form.settings[0].form_id = data[0].project_forms_info.form_kobo_id_string;
+  }
+
+
+
+  jQuery.ajax({
+    url: vars.node_url + "/customUpdateForm",
+    method: "PATCH",
+    dataType: "json",
+    contentType: "application/json; charset=utf-8",
+    data: JSON.stringify(form)
+  })
+  .done(function(response){
+    console.log("success",response);
+    var msg = JSON.parse(response.msg.body);
+    console.log("MESSAGE , ", msg);
+    if(msg.url){
+      user_alert("form successfully updated in Kobotoolbox","info");
+      working();
+    }
+  })
+  .fail(function(response){
+    user_alert("Failed to update form on kobotools with ID " + form.kobo_id + "Please screenshot this message and send it to support@stats4sd.org: " + response);
+    working();
+  })
+
+}
 
 function deploy_form(table_id,id){
   working(getString(1));
@@ -129,7 +184,7 @@ function deploy_form(table_id,id){
 
   //take form_id and get build form:...
   form.survey = prepare_survey(form_type_id);
-  form.choices = prepare_choices(form.survey);
+  form.choices = prepare_choices(form.survey,form_type_id);
   form.settings = prepare_settings(data[0]);
 
   console.log(form);
@@ -250,7 +305,7 @@ function prepare_survey(form_type_id) {
 
 //function takes list of questions and prepares the choices sheet to include all required choice lists;
 //returns json object for the choices sheet
-function prepare_choices(questions) {
+function prepare_choices(questions,form_type_id) {
 
   // Matches lookups from 'select_one [choices]' and 'select_multiple [choices]'
   // Always include the placeholder choice, so the sheet headers are always rendered.
@@ -272,12 +327,29 @@ function prepare_choices(questions) {
   })
 
   //go through all the choices, and if their list_name matches one of the choicesTracker items, add it to selectedChoices.
-    var selectedChoices = jQuery.map(choices,function(item,index){
-    if(choicesTracker.some(i => i == item.list_name)) {
-      return item;
-    }
+    var selectedChoices = choices.map(function(choicesItem,index){
+      var selectedChoicesPart = {};
+      console.log("CHOICES ITEM = ", choicesItem);
+      console.log("formTypeId = ",form_type_id);
+      choicesTracker.forEach(function(choiceTrackerItem,index){
+        if(choicesItem.list_name == choiceTrackerItem && choicesItem.form_id == form_type_id || choicesItem.form_id == null){
+          selectedChoicesPart = choicesItem;
+        }
+        else {
+          selectedChoicesPart.id == -1;
+        }
+      })
+
+     if(selectedChoicesPart.id > -1) return selectedChoicesPart;
+
   })
 
+  selectedChoices = selectedChoices.filter( function(item){
+    if(item) return true;
+    return false;
+  });
+
+  console.log("SELECTED CHOICES = ", selectedChoices);
   return selectedChoices;
 }
 
@@ -291,11 +363,15 @@ function prepare_settings(data){
   pName = pName.replace(/\s/g,"-")
 
   //prepend project ID to form ID and title.
-  settings[0].form_id = pName + "_" + settings[0].form_id;
-  settings[0].form_title = pName + " - " + settings[0].form_title;
+  if(! settings[0].form_id.startsWith(pName)) {
+    settings[0].form_id = pName + "_" + settings[0].form_id;
+    settings[0].form_title = pName + " - " + settings[0].form_title;
+  }
+
+  settings[0].version = data.xls_forms.version + "_d-" + date_iso(new Date(), "datetime")
 
   //Apply testing string to allow for multiples...
-  settings[0].form_id += "_test_" + Math.floor((Math.random() * 100000) + 1).toString()
+  //settings[0].form_id += "_test_" + Math.floor((Math.random() * 100000) + 1).toString()
 
   return settings;
 }
@@ -370,9 +446,12 @@ function setup_project_forms_table() {
         }
         //else, render 'delete' button'
         else{
-          return "<button class='btn btn-link submit_button' onclick='delete_form("+project.id+","+meta.row+")'>"+getString(13)+"</button>";
+          return "<button class='btn btn-link btn-sm submit_button' onclick='update_form("+project.id+","+meta.row+")'>UPDATE FORM</button>"+
+         "<br/>"+
+          "<button class='btn btn-link btn-sm submit_button' onclick='delete_form("+project.id+","+meta.row+")'>delete form</button>";
         }
-      }}
+      }},
+      {data: "project_forms_info.form_kobo_id_string", title: "Kobotools Form ID", visible: false}
     ];
 
 
@@ -692,30 +771,39 @@ function parse_data_into_tables(data,form){
     var sampleDate = data.date.substring(0,10);
 
     sampleValues[0]["samples"] = {};
-      sampleValues[0]["samples"].id = data['sample_id']
-      sampleValues[0]["samples"].username = data.username
-      sampleValues[0]["samples"].plot_id = data.plot_id
-      sampleValues[0]["samples"].date = sampleDate || new Date()
-      sampleValues[0]["samples"].depth = data.depth
-      sampleValues[0]["samples"].texture = data.texture || ""
-      sampleValues[0]["samples"].at_plot = data.at_plot || "0"
-      sampleValues[0]["samples"].plot_photo = data.photo || "";
+    sampleValues[0]["samples"].id = data.sample_id
+    sampleValues[0]["samples"].username = data.username
 
+    // currently null
+    sampleValues[0]["samples"].plot_id = data.plot_id
+
+
+    sampleValues[0]["samples"].date = sampleDate || new Date()
+    sampleValues[0]["samples"].depth = data.depth
+    sampleValues[0]["samples"].texture = data.texture || ""
+    sampleValues[0]["samples"].at_plot = data.at_plot || "0"
+
+    //just pulls photo name/id. Need to pull actual photo next!
+    sampleValues[0]["samples"].plot_photo = data.plot_photo || "";
+
+    console.log("DATA GPS ", data._geolocation);
       //parse GPS:
-      if(data.gps){
-        var gpsArray = data.gps.split(" ");
-            console.log("gps array",gpsArray);
-            sampleValues[0]["samples"].longitude = gpsArray[0] || null
-            sampleValues[0]["samples"].latitude = gpsArray[1] || null
-            sampleValues[0]["samples"].altitude = gpsArray[2] || null
-            sampleValues[0]["samples"].accuracy = gpsArray[3] || null
+      if(data._geolocation[0] != null){
+        var gpsArray = data.location.split(" ");
+        console.log("gps array",gpsArray);
+        sampleValues[0]["samples"].latitude = gpsArray[0] || null
+        sampleValues[0]["samples"].longitude = gpsArray[1] || null
+        sampleValues[0]["samples"].altitude = gpsArray[2] || null
+        sampleValues[0]["samples"].accuracy = gpsArray[3] || null
       }
 
-
-      sampleValues[0]["samples"].comment = data.comment;
-      sampleValues[0]["samples"].farmer_quick = data.farmer || ""
+      // pulled from pagee, not form data:
       sampleValues[0]["samples"].project_id = projectId;
-      sampleValues[0]["samples"].comnunity_quick = data.na_community || ""
+
+      sampleValues[0]["samples"].comment = data.comms
+      sampleValues[0]["samples"].farmer_quick = data.farmer || ""
+
+      sampleValues[0]["samples"].community_quick = data.na_community || ""
 
       console.log("sample values to enter", sampleValues)
     //insert Sample values into Db via editor ajax function:
@@ -739,11 +827,15 @@ function parse_data_into_tables(data,form){
 
   }
 
-if(formType == "ccrp_soil_p") {
+  if(formType == "ccrp_soil_p") {
+
+
+    console.log("soils_p data = ",data)
+
     p = {};
     p[0] = {};
 
-        var sample_id = "";
+    var sample_id = "";
     if(data['bar_code']=='1'){
       sample_id = data['sample_id']
     }
@@ -760,7 +852,7 @@ if(formType == "ccrp_soil_p") {
       vol_topup: data['vol_topup'],
       color: data['color'],
       cloudy: data['cloudy'],
-      raw_conc: data['Raw_conc'],
+      raw_conc: data['raw_conc'],
       olsen_p: data['olsen_p'],
       blank_water: data['blank_water'],
       correct_moisture: data['correct_moisture'],
@@ -788,12 +880,23 @@ if(formType == "ccrp_soil_p") {
 
   }
 
-    if(formType == "ccrp_soil_ph") {
+  if(formType == "ccrp_soil_ph") {
+
+    console.log("soils_ph data = ",data)
+
+    var sample_id = "";
+    if(data['bar_code']=='1'){
+      sample_id = data['sample_id']
+    }
+    else {
+      sample_id = data['no_bar_code']
+    }
+
     ph = {};
     ph[0] = {};
     ph[0]["Dt_RowId"] = 0;
     ph[0]["analysis_ph"] = {
-      sample_id: data['sample_id'],
+      sample_id: sample_id,
       analysis_date: data['analysis_date'],
       weight_soil: data['weight_soil'],
       vol_water: data['vol_water'],
@@ -820,35 +923,45 @@ if(formType == "ccrp_soil_p") {
 
   }
 
-    if(formType == "ccrp_soil_poxc") {
+  if(formType == "ccrp_soil_poxc") {
+
+    console.log("soils_poxc data = ",data)
     poxc = {};
     poxc[0] = {};
 
-    if(data.hasOwnProperty('moisture')){
-        if(data.estimated_soilmoisture != null && data.estimated_soilmoisture != 0 && data.estimated_soilmoisture != "") {
-            soil_moisture = data.estimated_soilmoisture;
-        }
-        else {
-            soil_moisture = 0;
-        }
+    var sample_id = "";
+    if(data['bar_code']=='1'){
+      sample_id = data['sample_id']
     }
     else {
+      sample_id = data['no_bar_code']
+    }
+
+    if(data.hasOwnProperty('moisture')){
+      if(data.estimated_soilmoisture != null && data.estimated_soilmoisture != 0 && data.estimated_soilmoisture != "") {
+        soil_moisture = data.estimated_soilmoisture;
+      }
+      else {
         soil_moisture = 0;
+      }
+    }
+    else {
+      soil_moisture = 0;
     }
 
     poxc[0]["Dt_RowId"] = 0;
     poxc[0]["analysis_poxc"] = {
-      sample_id: data['sample_id'],
+      sample_id: sample_id,
       analysis_date: data['analysis_date'],
       weight_soil: data['weight_soil'],
       color: data['color'],
       color100: data['color100'],
       conc_digest: data['conc_digest'],
       cloudy: data['cloudy'],
-      colorimeter: data['colorimeter'],
+      pct_reduction_color: data['pct_reduction_color'],
       raw_conc: data['raw_conc'],
       poxc_sample: data['poxc_sample'],
-      posx_soil: data['posx_soil'],
+      poxc_soil: data['poxc_soil'],
       correct_moisture: data['correct_moisture'],
       moisture: soil_moisture,
       poxc_soil_corrected: data['poxc_soil_corrected']
@@ -872,6 +985,8 @@ if(formType == "ccrp_soil_p") {
   }
 
   if(formType == "ccrp_soil_agg") {
+
+    console.log("soils_agg data = ",data)
     agg = {};
     agg[0] = {};
 
@@ -882,8 +997,6 @@ if(formType == "ccrp_soil_p") {
     else {
       sample_id = data['no_bar_code']
     }
-
-  console.log("sample_id = ",sample_id)
 
     agg[0]["Dt_RowId"] = 0;
     agg[0]["analysis_agg"] = {

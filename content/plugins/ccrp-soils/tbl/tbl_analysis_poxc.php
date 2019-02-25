@@ -42,7 +42,7 @@ function dt_analysis_poxc() {
       Field::inst('analysis_poxc.color100'),
       Field::inst('analysis_poxc.conc_digest'),
       Field::inst('analysis_poxc.cloudy'),
-      Field::inst('analysis_poxc.colorimeter'),
+      Field::inst('analysis_poxc.pct_reduction_color'),
       Field::inst('analysis_poxc.raw_conc'),
       Field::inst('analysis_poxc.poxc_sample'),
       Field::inst('analysis_poxc.poxc_soil'),
