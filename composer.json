@@ -51,7 +51,7 @@
         "version": "master",
         "source": {
           "url": "https://github.com/vedmack/yadcf.git",
-          "type": "wordpress-plugin",
+          "type": "git",
           "reference": "master"
         }
       }
