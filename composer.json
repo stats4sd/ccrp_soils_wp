@@ -38,7 +38,7 @@
   "repositories":[
     {
       "type":"git",
-      "url":"git@bitbucket.org:dave_in_stats/wordpress-datatables"
+      "url":"https://dave_in_stats@bitbucket.org/dave_in_stats/wordpress-datatables.git"
     },
     {
       "type":"composer",
