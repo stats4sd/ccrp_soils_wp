@@ -50,7 +50,7 @@
         "name": "vedmack/yadcf",
         "version": "master",
         "source": {
-          "url": "git@github.com:vedmack/yadcf",
+          "url": "https://github.com/vedmack/yadcf.git",
           "type": "wordpress-plugin",
           "reference": "master"
         }
