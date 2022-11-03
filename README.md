@@ -1,4 +1,4 @@
-# ccrp_soils_wp
+# CCRP Soils WordPress
 The WordPress Site for the Soils Health Toolkit / Kobotoolbox link app.
 
 ## Structure / Tech setup
@@ -41,5 +41,3 @@ Installing the dependancies requires composer and yarn. Make sure you have them 
 2. Setup the WordPress database.
  - If starting from scratch, navigate to your new site through a browser and create the db using the 'famous five-minute WordPress Installation process'.
  - If you're bringing a database over from another install, I suggest the 'duplicator' plugin. I've had a lot of success moving wordpress databases around with that one. Make sure that when you create the duplicator backup, you choose 'database only' mode.
-
-## Updating
